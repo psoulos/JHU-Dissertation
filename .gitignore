@@ -1,2 +1,29 @@
+# LaTeX intermediate and output files
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.lof
+*.lot
+*.out
+*.pdf
+*.run.xml
+*.synctex.gz
+*.toc
+*.xmpi
 
+# Auxiliary for specific chapters
+*-chapter-*.aux
+*-appendix-*.aux
+
+# Editor-specific
+*.swp
+*.swo
+*~
+.vscode/
+
+# MacOS metadata
 .DS_Store
