@@ -13,7 +13,7 @@ For all of the models we evaluated, the HP searching and training was done in 3 
 
 All of our models were trained on 1x V100 (16GB) virtual machines.  
 
-\subsection{\blackboard} \label{sec:blackboard-training}
+\subsection{\blackboard} \label{sec:dtm-blackboard-training}
 For the \blackboard\ models, we ran a 3x hyperparameter grid search over the following ranges. The best performing hyperparameter values are marked in bold.
 
 
@@ -353,7 +353,7 @@ The TreeTransformer 5x training on the target tasks was done with these final HP
 
 \section{Basic Sentence Transforms}
 
-\subsection{Dataset Construction} \label{sec:dataset-construction}
+\subsection{Dataset Construction} \label{sec:dtm-dataset-construction}
 The Basic Sentence Transforms vocabulary size and tree depth are available below. The lexical splits are constructed by using 1 set of adjectives for the Train, Dev, Test IID, and OOD Structural splits, and a disjoint set for the OOD Lexical split. The structural splits are constructed by using 0-2 nested adjectives distributed randomly to the two noun phrases for train, dev, and OOD Lexical splits, and 3-4 nested adjectives to the two noun phrases for the OOD Structural split. Adjective phrases are nested within each other within a noun phrase, so each additional adjective increases the overall tree depth by 1.
 
 \textbf{Vocabulary Size}
@@ -395,7 +395,7 @@ Active \& Passive$\rightarrow$Logical & 10 & 10 & 12 \\
 \end{table}
 
 
-\subsection{Dataset Samples} \label{sec:dataset-samples}
+\subsection{Dataset Samples} \label{sec:dtm-dataset-samples}
 This appendix contains samples of the 4 tasks that we used from the Basic Sentence Transforms Dataset.
 
 \subsubsection{\textbf{CAR-CDR-SEQ} Samples}

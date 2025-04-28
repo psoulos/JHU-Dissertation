@@ -27,7 +27,7 @@
     We use a novel analysis technique called ROLE to show that recurrent neural networks perform well on such tasks by converging to solutions which implicitly represent symbolic structure. This method uncovers a symbolic structure which, when properly embedded in vector space, closely approximates the encodings of a standard seq2seq network trained to perform the compositional SCAN task. We verify the causal importance of the discovered symbolic structure by showing that, when we systematically manipulate hidden embeddings based on this symbolic structure, the model's output is changed in the way predicted by our analysis.
 \end{abstract}
 
-\section{Introduction} \label{sec:Intro}
+\section{Introduction} \label{sec:rldn-Intro}
 
 \begin{figure}
     \footnotesize
@@ -43,16 +43,16 @@
         
         \hypersetup{linkcolor=white}
         
-        \begin{tcolorbox}[width=.5\columnwidth, colback={myblue}, coltitle=white, toptitle=3pt, bottomtitle=3pt, colframe={mybluebox},outer arc=2mm,colupper=black, valign=center, halign=left, boxsep = 0pt, title={\textbf{Method: Approximate the encodings of a neural network with a more \\ interpretable compositional model}  (\S \color{white}\ref{sec:Role-Learning})}, halign title=center, segmentation style={solid, line width=1pt}, left=3pt]
+        \begin{tcolorbox}[width=.5\columnwidth, colback={myblue}, coltitle=white, toptitle=3pt, bottomtitle=3pt, colframe={mybluebox},outer arc=2mm,colupper=black, valign=center, halign=left, boxsep = 0pt, title={\textbf{Method: Approximate the encodings of a neural network with a more \\ interpretable compositional model}  (\S \color{white}\ref{sec:rldn-Role-Learning})}, halign title=center, segmentation style={solid, line width=1pt}, left=3pt]
             \def\arraystretch{1.0}% 
         
         \textbf{Step 1: Assign structural roles to words using a learned role assigner.} 
-        %(\S \ref{sec:Role-Learning})
+        %(\S \ref{sec:rldn-Role-Learning})
         
         \includegraphics[width=.5\columnwidth]{images/rldn/rolefig2.png}
         
        \textbf{Step 2: Combine word and role vectors using a closed-form equation with learned parameters.} 
-     %   {\scriptsize (\S \ref{sec:SCANnetReps})}
+     %   {\scriptsize (\S \ref{sec:rldn-SCANnetReps})}
         
         \includegraphics[width=.5\columnwidth]{images/rldn/rolefig_middle.pdf}
         
@@ -63,11 +63,11 @@
         \begin{tcolorbox}[width=.5\columnwidth, colback={myblue}, coltitle=white, toptitle=3pt, bottomtitle=3pt, colframe={mybluebox},outer arc=2mm,colupper=black, valign=center, halign=left, boxsep = 0pt, title={\textbf{Results:}}, halign title=center, segmentation style={solid, line width=1pt}, left=3pt]
             \def\arraystretch{1.0}% 
             
-        \textbf{The compositional encodings are functionally equivalent to the RNN encodings.} (\S \ref{sec:SCANnetReps})
+        \textbf{The compositional encodings are functionally equivalent to the RNN encodings.} (\S \ref{sec:rldn-SCANnetReps})
     
         \includegraphics[width=.5\columnwidth]{images/rldn/rolefig_bottom1.pdf}
             
-        \textbf{The RNN encodings can be manipulated in symbolic ways to alter the output.} (\S \ref{sec:Surgery})
+        \textbf{The RNN encodings can be manipulated in symbolic ways to alter the output.} (\S \ref{sec:rldn-Surgery})
         
         \includegraphics[width=.5\columnwidth]{images/rldn/rolefig_bottom2.pdf}
         
@@ -84,30 +84,30 @@ Given that standard NNs have no obvious mechanisms for representing symbolic str
 Could it be that NNs \textit{do} learn symbolic representations---covertly embedded as vectors in their state spaces?
 \citet{mccoy} showed that 
 when trained on highly compositional tasks, 
-standard NNs learned representations that are functionally equivalent to compositional vector embeddings of symbolic structures (Sec. \ref{sec:TPR}). Processing in these NNs assigns structural representations to inputs and generates outputs that are governed by compositional rules stated over those representations. We refer to the networks we will analyze as \newterm{target NNs}, because we will propose a new type of NN (in Sec.~\ref{sec:Role-Learning})---the \newterm{Role Learner (\RLN)}---which is used to \textit{analyze} the target network.
+standard NNs learned representations that are functionally equivalent to compositional vector embeddings of symbolic structures (Sec. \ref{sec:rldn-TPR}). Processing in these NNs assigns structural representations to inputs and generates outputs that are governed by compositional rules stated over those representations. We refer to the networks we will analyze as \newterm{target NNs}, because we will propose a new type of NN (in Sec.~\ref{sec:rldn-Role-Learning})---the \newterm{Role Learner (\RLN)}---which is used to \textit{analyze} the target network.
 %, after first discussing related analysis methods %of network analysis 
-%in Sec.~\ref{sec:Related}.
+%in Sec.~\ref{sec:rldn-Related}.
 In contrast with the analysis model of \citet{mccoy}, which relies on a hand-specified hypothesis about the structure underlying the learned representations of the target NN, \RLN\ \textit{automatically} learns a symbolic structure that best approximates the internal representation of the target network. This yields 
 %Automating the discovery of structural hypotheses provides 
 two %distinct 
 advantages. 
-First, \RLN\ achieves success at analyzing networks for which the underlying structure is unclear. We show this in Sec.~\ref{sec:SCAN}, where \RLN\ successfully uncovers the symbolic structures learned by a seq2seq RNN trained on the SCAN synthetic semantic parsing task \citep{lake2018generalization}. Second, removing the need for hand-specified structural hypotheses reduces the burden on the analyst, who only needs to provide input sequences and their target NN encodings. Discovering symbolic structure within a model enables us to perform precise alterations to the internal representations in order to produce desired alterations in the output (Sec.~\ref{sec:Surgery}). Then, in Sec.~\ref{sec:NLP}, we turn briefly to partially-compositional tasks in NLP.
+First, \RLN\ achieves success at analyzing networks for which the underlying structure is unclear. We show this in Sec.~\ref{sec:rldn-SCAN}, where \RLN\ successfully uncovers the symbolic structures learned by a seq2seq RNN trained on the SCAN synthetic semantic parsing task \citep{lake2018generalization}. Second, removing the need for hand-specified structural hypotheses reduces the burden on the analyst, who only needs to provide input sequences and their target NN encodings. Discovering symbolic structure within a model enables us to perform precise alterations to the internal representations in order to produce desired alterations in the output (Sec.~\ref{sec:rldn-Surgery}). Then, in Sec.~\ref{sec:rldn-NLP}, we turn briefly to partially-compositional tasks in NLP.
 
 The novel contributions of this research are:
 \begin{itemize}
   \vspace{-2mm}
-  \item ROLE, a NN module that learns to assign symbolic structures to input sequences (Sec.~\ref{sec:Role-Learning}).
+  \item ROLE, a NN module that learns to assign symbolic structures to input sequences (Sec.~\ref{sec:rldn-Role-Learning}).
   \vspace{-2mm}
-  \item Demonstration that RNNs converge to compositional solutions on the synthetic SCAN task (Sec.~\ref{sec:SCAN}).
+  \item Demonstration that RNNs converge to compositional solutions on the synthetic SCAN task (Sec.~\ref{sec:rldn-SCAN}).
   \vspace{-2mm}
-  \item A precise closed-form expression for the distributed encoding learned by an RNN trained on SCAN, exhibiting its latent symbolic structure (Sec.~\ref{sec:scan-role-interpretation}).
+  \item A precise closed-form expression for the distributed encoding learned by an RNN trained on SCAN, exhibiting its latent symbolic structure (Sec.~\ref{sec:rldn-scan-role-interpretation}).
   \vspace{-2mm}
-  \item Demonstration of the causal relevance of this symbolic structure by using the equation for its vector encoding to control RNN output through precise alteration of the RNN's internal encoding (Sec.~\ref{sec:Surgery}).
+  \item Demonstration of the causal relevance of this symbolic structure by using the equation for its vector encoding to control RNN output through precise alteration of the RNN's internal encoding (Sec.~\ref{sec:rldn-Surgery}).
   \vspace{-2mm}
-  \item Additional evidence showing that sentence embedding models do not capture compositional structure (Sec. \ref{sec:NLP}).
+  \item Additional evidence showing that sentence embedding models do not capture compositional structure (Sec. \ref{sec:rldn-NLP}).
 \end{itemize}
 
-\section{Background Related work} \label{sec:Related}
+\section{Background Related work} \label{sec:rldn-Related}
 
 \subsection{Compositionality}
 
@@ -126,10 +126,10 @@ Two of the most popular analysis techniques are the behavioral and probing appro
 
 In the probing approach, an auxiliary classifier is trained to classify the model's internal representations based on some linguistically-relevant distinction \citep{adi2016fine,giulianelli2018hood,conneau2018cram,conneau2018senteval,belinkov2017evaluating,blevins2018hierarchical,peters2018dissecting,tenney2018what}. In contrast with the behavioral approach, the probing approach tests whether some particular information is present in the model's encodings, but it says little about whether this information is actually used by the model. Indeed, in some cases models fail despite having the necessary information to succeed in their representations, showing that the ability of a classifier to extract that information does not mean that the model is using it \citep{ Voita2020InformationTheoreticPW, ravichander2020probing,vanmassenhove2017investigating}.
 
-We build on \citet{mccoy}, which introduced the analysis task \newterm{DISCOVER (DISsecting COmpositionality in VEctor Representations)}:  take a NN and, to the extent possible, find an explicitly-compositional approximation to its internal distributed representations. DISCOVER allows us to bridge the gap between representation and behavior: It reveals not only what information is encoded in the representation, but also reveals this information in a way that we can manipulate to show that the information is causally implicated in the model's behavior (Section~\ref{sec:Surgery}). Moreover, it provides a much more comprehensive window into the representation than the probing approach does; while probing extracts particular types of information from a representation (e.g., ``does this representation distinguish between active and passive sentences?''), DISCOVER exhaustively decomposes the model's representational space. In this regard, DISCOVER is most closely related to the approaches of \citet{andreas2019measuring}, \citet{chrupala2019correlating}, and \citet{abnar2019blackbox}, who also propose methods for discovering a complete symbolic characterization of a set of vector representations, and \citet{omlin1996extraction} and \citet{weiss2018extracting}, which also seek to extract  more interpretable symbolic models that approximate neural network behavior.
+We build on \citet{mccoy}, which introduced the analysis task \newterm{DISCOVER (DISsecting COmpositionality in VEctor Representations)}:  take a NN and, to the extent possible, find an explicitly-compositional approximation to its internal distributed representations. DISCOVER allows us to bridge the gap between representation and behavior: It reveals not only what information is encoded in the representation, but also reveals this information in a way that we can manipulate to show that the information is causally implicated in the model's behavior (Section~\ref{sec:rldn-Surgery}). Moreover, it provides a much more comprehensive window into the representation than the probing approach does; while probing extracts particular types of information from a representation (e.g., ``does this representation distinguish between active and passive sentences?''), DISCOVER exhaustively decomposes the model's representational space. In this regard, DISCOVER is most closely related to the approaches of \citet{andreas2019measuring}, \citet{chrupala2019correlating}, and \citet{abnar2019blackbox}, who also propose methods for discovering a complete symbolic characterization of a set of vector representations, and \citet{omlin1996extraction} and \citet{weiss2018extracting}, which also seek to extract  more interpretable symbolic models that approximate neural network behavior.
 Like \citet{andreas2019measuring} and \citet{chrupala2019correlating}, we seek to find the structure encoded in neural networks, rather than seeking structure directly from the data as is the goal in grammar induction work such as \citet{shen2018ordered} and \citet{bowman2016fast}.
 
-\section{NN embedding of symbol structures} \label{sec:TPR}
+\section{NN embedding of symbol structures} \label{sec:rldn-TPR}
 
 \citeauthor{mccoy} showed that, in GRU \citep{cho-etal-2014-learning} encoder-decoder networks performing simple, fully-compositional string manipulations, the medial encoding (between encoder and decoder) could be extremely well approximated, up to an affine transformation, by \newterm{Tensor Product Representations (TPRs)} \citep{Smolensky:1990:TPV:102418.102425}, which are explicitly-compositional vector embeddings of symbolic structures. To represent a string of symbols as a TPR, the symbols in the string $\t{337}$ might be parsed into three constituents $\{ \t{3}\colon\!\r{pos}1, \t{7}\colon\!\r{pos}3, \t{3}\colon\!\r{pos}2 \}$, where $\r{pos}n$ is the role of $n^{\r{th}}$ position from the left edge of the string; other role schemes are also possible, such as roles denoting right-to-left position: $\{ \t{3}\colon\!\r{third\mbox{-}to\mbox{-}last}, \t{3}\colon\!\r{second\mbox{-}to\mbox{-}last}, \t{7}\colon\!\r{last} \}$. The embedding of a constituent $\t{7}\colon\!\r{pos}3$ is $\b{e}(\t{7}\colon\!\r{pos}3) = \b{e}_\rF(\t{7}) \otimes \b{e}_\rR(\r{pos3})$, where $\otimes$ is the tensor product (outer product), $\b{e}_\rR, \b{e}_\rF$ are respectively a vector embedding of the roles and a vector embedding of the \newterm{fillers} of those roles: the digits. The embedding of the whole string is the sum of the embeddings of its constituents. 
 In general, for a symbol structure $\t{S}$ with roles $\{ r_k \}$ that are respectively filled by the symbols $\{ \t{f}_k \}$,
@@ -142,9 +142,9 @@ $\b{e}_\r{TPR}(\t{S}) = \sum_k \b{e}_\rF(\t{f}_k) \otimes \b{e}_\rR(r_k)$. The D
     \label{fig:discover}
 \end{figure}
 
-At a high level, these role embeddings serve a similar purpose as positional embeddings in a Transformer \citep{vaswani2017attention}, in that they are vector embeddings of a token's position in a sequence. The roles discussed above---and the positional embeddings used in Transformers---illustrate \textbf{role schemes} based on sequential position; non-sequential role schemes such as positions in a tree are also possible. \citet{mccoy} showed that,for a given seq2seq architecture learning a given string-mapping task, there exists a highly accurate TPR approximation of the medial encoding, given an appropriate  pre-defined role scheme. The main technical contribution of the present paper is the Role Learner (ROLE) model, an RNN that learns its own role scheme to optimize the fit of a TPR approximation to a given set of internal representations in a pre-trained target NN. This makes the DISCOVER framework more general by removing the need for human-generated hypotheses about the role schemes the network might be implementing. Learned role schemes, we will see in Sec.~\ref{sec:SCANnetReps}, can enable good TPR approximation of networks for which human-generated role schemes fail.
+At a high level, these role embeddings serve a similar purpose as positional embeddings in a Transformer \citep{vaswani2017attention}, in that they are vector embeddings of a token's position in a sequence. The roles discussed above---and the positional embeddings used in Transformers---illustrate \textbf{role schemes} based on sequential position; non-sequential role schemes such as positions in a tree are also possible. \citet{mccoy} showed that,for a given seq2seq architecture learning a given string-mapping task, there exists a highly accurate TPR approximation of the medial encoding, given an appropriate  pre-defined role scheme. The main technical contribution of the present paper is the Role Learner (ROLE) model, an RNN that learns its own role scheme to optimize the fit of a TPR approximation to a given set of internal representations in a pre-trained target NN. This makes the DISCOVER framework more general by removing the need for human-generated hypotheses about the role schemes the network might be implementing. Learned role schemes, we will see in Sec.~\ref{sec:rldn-SCANnetReps}, can enable good TPR approximation of networks for which human-generated role schemes fail.
 
-\section{The Role Learner (ROLE) Model} \label{sec:Role-Learning} 
+\section{The Role Learner (ROLE) Model} \label{sec:rldn-Role-Learning} 
 
 \RLN\footnote{Code available at \url{https://github.com/psoulos/role-decomposition}.} produces a vector-space embedding of an input string of $T$ symbols $\t{S} = \t{s}_1 \t{s}_2 \ldots \t{s}_T$ by producing a TPR $\b{T}(\t{S})$ and then passing it through an affine transformation.
 %$\bW$.
@@ -179,19 +179,19 @@ Finally, \RLN\ learns an affine transformation to map this TPR into $\R^d$, wher
 \RLN\ uses an LSTM \citep{Hochreiter:1997:LSM:1246443.1246450} to compute the role-assigning attention-vectors $\va_t$ from its learned embedding $\mF$ of the input symbols $\t{s}_t$: at each $t$, the hidden state of the LSTM passes through a linear layer and then a softmax to produce $\va_t$ (depicted in Figure \ref{fig:role_learner}). Let the $t^{\r{th}}$ LSTM hidden state be $\vq_t \in \R^H$; let the output-layer weight-matrix have rows $\vk_\rho^\top \in \R^H$ and let the columns of $\mR$ be $\vv_\rho \in R^{d_\rR}$, with $\rho = 1,\dots,n_\rR$. Then $\vr_t = \mR\, \va_t = \sum_{\rho=1}^{n_\rR} \vv_\rho\, \softmax ( \vk_\rho^\top \vq_t )$: the result of query-key attention  \citep[e.g.,][]{vaswani2017attention} with query $\vq_t$ to a fixed external memory containing key-value pairs $\{ ( \vk_\rho, \vv_\rho ) \}_{\rho=1}^{n_\rR}$.
 
 Since a TPR for a discrete symbol structure deploys a discrete set of roles specifying discrete structural positions, ideally a single role would be selected for each $\t{s}_t$: $\va_t$ would be one-hot.
-\RLN\ training therefore deploys regularization to bias learning towards one-hot $\va_t$ vectors (based on the regularization proposed in \citet{palangi}, developed for the same purpose). See Appendix \ref{sec:role-regulatization} for the precise regularization terms that we used.
+\RLN\ training therefore deploys regularization to bias learning towards one-hot $\va_t$ vectors (based on the regularization proposed in \citet{palangi}, developed for the same purpose). See Appendix \ref{sec:rldn-role-regulatization} for the precise regularization terms that we used.
 
 It is essential to note that, while we impose this regularization on \RLN, there is no explicit bias favoring discrete compositional representations in the \textit{target encoder} $\c{E}$: any such structure that \RLN\ finds hidden in the representations learned by $\c{E}$ must result from biases implicit in the vanilla RNN-architecture of $\c{E}$ when applied to its target task.
 
-\section{The SCAN task} \label{sec:SCAN}
+\section{The SCAN task} \label{sec:rldn-SCAN}
 
-Returning to our central question from Sec.~\ref{sec:Intro}, how can neural networks \textit{without} explicit compositional structure perform well on fully-compositional tasks? 
+Returning to our central question from Sec.~\ref{sec:rldn-Intro}, how can neural networks \textit{without} explicit compositional structure perform well on fully-compositional tasks? 
 Our hypothesis is that, though these models have no \textit{constraint} forcing them to be compositional, they still have the \textit{ability} to implicitly learn compositional structure.
 To test this hypothesis, we apply \RLN\ to a standard RNN-based seq2seq model \citep{sutskever2014sequence} trained on a fully compositional task. Because the RNN has no constraint forcing it to use TPRs, we do not know \textit{a priori} whether there exists any solution that \RLN\ could learn; thus, if \RLN\ does learn anything it will be a significant empirical finding about how these RNNs operate.
 
 We consider the SCAN task \citep{lake2018generalization}, which was designed to test compositional generalization and systematicity. SCAN is a synthetic semantic parsing
 %sequence-to-sequence mapping 
-task: an input sequence describing an action plan, e.g., \textcolor{violet}{$\t{jump \hs opposite \hs left}$}, is mapped to a sequence of primitive actions, e.g., \textcolor{violet}{$\t{TL \hs TL \hs JUMP}$} (see Sec.~\ref{sec:Surgery} for a complex example). We use \textcolor{violet}{$\t{TL}$} to abbreviate \textcolor{violet}{$\t{TURN\_LEFT}$}, sometimes written \textcolor{violet}{$\t{LTURN}$}; similarly, we use \textcolor{violet}{$\t{TR}$} for \textcolor{violet}{$\t{TURN\_RIGHT}$}. The SCAN mapping is defined by a complete set of compositional rules \citep[Supplementary Fig. 7]{lake2018generalization}. 
+task: an input sequence describing an action plan, e.g., \textcolor{violet}{$\t{jump \hs opposite \hs left}$}, is mapped to a sequence of primitive actions, e.g., \textcolor{violet}{$\t{TL \hs TL \hs JUMP}$} (see Sec.~\ref{sec:rldn-Surgery} for a complex example). We use \textcolor{violet}{$\t{TL}$} to abbreviate \textcolor{violet}{$\t{TURN\_LEFT}$}, sometimes written \textcolor{violet}{$\t{LTURN}$}; similarly, we use \textcolor{violet}{$\t{TR}$} for \textcolor{violet}{$\t{TURN\_RIGHT}$}. The SCAN mapping is defined by a complete set of compositional rules \citep[Supplementary Fig. 7]{lake2018generalization}. 
 
 \begin{table*}[ht]
 \resizebox{\textwidth}{!}{
@@ -203,19 +203,19 @@ task: an input sequence describing an action plan, e.g., \textcolor{violet}{$\t{
  \bottomrule
 \end{tabular}
 }
-\caption{\label{tab:scan-accuracy}Mean substitution accuracy for learned (bold) and hand-defined role schemes on SCAN across three random initializations. Standard deviation was below 1\% for all schemes except for snapped. Substitution accuracy is measured by feeding \RLN's approximation to the target decoder. (Sec.~\ref{sec:SCANnetReps})}
+\caption{\label{tab:scan-accuracy}Mean substitution accuracy for learned (bold) and hand-defined role schemes on SCAN across three random initializations. Standard deviation was below 1\% for all schemes except for snapped. Substitution accuracy is measured by feeding \RLN's approximation to the target decoder. (Sec.~\ref{sec:rldn-SCANnetReps})}
 \end{table*}
 
-\subsection{The compositional structure of SCAN encoder representations} \label{sec:SCANnetReps}
+\subsection{The compositional structure of SCAN encoder representations} \label{sec:rldn-SCANnetReps}
 
-For our target SCAN encoder $\c{E}$, we trained a standard GRU with one hidden layer of dimension 100 for 100,000 steps (batch-size 1) with a dropout of 0.1 on the simple train-test split (hyperparameters determined by a limited search; see Appendix \ref{sec:rnn-scan}).
+For our target SCAN encoder $\c{E}$, we trained a standard GRU with one hidden layer of dimension 100 for 100,000 steps (batch-size 1) with a dropout of 0.1 on the simple train-test split (hyperparameters determined by a limited search; see Appendix \ref{sec:rldn-rnn-scan}).
 $\c{E}$ achieves $98.47\%$ (full-string) accuracy on the test set. Thus $\c{E}$ provides what we want: a standard RNN achieving near-perfect accuracy on a non-trivial fully compositional task.
 
 After training, we extract the final hidden embedding from the encoder for each example in the training and test sets. These are the encodings we attempt to approximate as explicitly compositional TPRs. 
-We provide \RLN\ with 50 roles to use as it wants (hyperparameters described in Appendix \ref{sec:role-scan}).
+We provide \RLN\ with 50 roles to use as it wants (hyperparameters described in Appendix \ref{sec:rldn-role-scan}).
 We evaluate the substitution accuracy that this learned role scheme provides in three ways. The \newterm{continuous} method tests ROLE in the same way as it was trained, with input symbol $\t{s}_t$ assigned role vector $\vr_t = \mR\, \va_t$. The continuous method does not produce a discrete set of role vectors because the linear layer that generates $a_t$ allows for continuously-valued weights. The remaining two methods test the efficacy of a truly discrete set of role vectors. First, in the \newterm{snapped} method, $\va_t$ is replaced at evaluation time by the one-hot vector $\vm_t$ singling out role $m_t = \argmax(\va_t)$: $\vr_t = \mR\, \vm_t$. This method serves the goal of enforcing the discreteness of roles, but it is expected to decrease performance because it tests ROLE in a different way than it was trained. Our final evaluation method, the \newterm{discrete} method, uses discrete roles without having such a train/test discrepancy by using a two-stage process. In the first stage, the snapped method is used to output one-hot vector roles $\vm_t$ for every symbol in the dataset. In the second stage, we train a TPE which does not learn roles but rather uses the one-hot vector $\vm_t$ as input during training. In this case, \RLN\ acts as an automatic data labeler, assigning a role to every input word.
 
-For comparison, we also train TPEs using a variety of discrete hand-crafted role schemes: left-to-right (LTR), right-to-left (RTL), bidirectional (Bi), tree position, neighbor-based Wickelrole (Wickel), and bag-of-words (BOW) (descriptions of these role schemes are in Appendix \ref{sec:role-schemes}). 
+For comparison, we also train TPEs using a variety of discrete hand-crafted role schemes: left-to-right (LTR), right-to-left (RTL), bidirectional (Bi), tree position, neighbor-based Wickelrole (Wickel), and bag-of-words (BOW) (descriptions of these role schemes are in Appendix \ref{sec:rldn-role-schemes}). 
 
 The mean substitution accuracy from these different methods is shown in Table \ref{tab:scan-accuracy}. 
 All of the predefined role schemes provide poor approximations, none surpassing $44.00\%$ accuracy. 
@@ -225,13 +225,13 @@ The success of \RLN\
 tells us two things. First, it shows that the target model's compositional behavior relies on compositional internal representations: it was by no means guaranteed to be the case that \RLN\ would be successful here, so the fact that it is successful tells us that the encoder has learned compositional representations. Second, it adds further validation to the efficacy of \RLN, because it shows that it can be a useful analysis tool in cases of significantly greater complexity than the simple string manipulation tasks studied in \citet{mccoy}. 
 In fact, it allows us to \textit{\textbf{write in closed form the embedding}} $\b{e}(\t{S})$ of an input $\t{S} = \t{s}_1\ldots\t{s}_T$ that is learned by the SCAN encoder, to an excellent degree of approximation (as measured by substitution accuracy):
 $\b{e}(\t{S}) = \bW \sum_{t=1}^T \vf_{\tau(\t{s}_t)} \otimes \vr_{\rho(\t{s}_t)} + \vb$, where $\tau(\t{s}_t)$ is symbol $\t{s}_t$'s type, $\rho(\t{s}_t)$ is the role assigned to $\t{s}_t$ by the algorithm discussed next,
-%given in \hl{Appendix} \ref{sec:Alg}, 
+%given in \hl{Appendix} \ref{sec:rldn-Alg}, 
 and the matrices $\bW$, $\mF = [\vf_1 \ldots \vf_{n_\rF} ]$, and $\mR = [\vr_1 \ldots \vr_{n_\rR}]$ and bias vector $\vb$ are learned by \RLN.
 Note that this expression is bilinear, even though the GRU encoder that generates it includes nonlinearities.
 
-\subsection{Interpreting the learned role scheme}\label{sec:scan-role-interpretation}
+\subsection{Interpreting the learned role scheme}\label{sec:rldn-scan-role-interpretation}
 
-By analyzing the roles assigned by ROLE to the sequences in the SCAN training set, we created a symbolic algorithm for predicting which role will be assigned to each filler. This section covers the primary factors of the algorithm, while the entire algorithm is described in Appendix \ref{sec:Alg} and discussed at additional length in Appendix \ref{sec:AlgDisc}. Though the algorithm was created based only on sequences in the SCAN training set, it is equally successful at predicting which roles will be assigned to test sequences, exactly matching \RLN's predicted roles for 98.7\% of sequences.
+By analyzing the roles assigned by ROLE to the sequences in the SCAN training set, we created a symbolic algorithm for predicting which role will be assigned to each filler. This section covers the primary factors of the algorithm, while the entire algorithm is described in Appendix \ref{sec:rldn-Alg} and discussed at additional length in Appendix \ref{sec:rldn-AlgDisc}. Though the algorithm was created based only on sequences in the SCAN training set, it is equally successful at predicting which roles will be assigned to test sequences, exactly matching \RLN's predicted roles for 98.7\% of sequences.
 
 %The details of this algorithm illuminate 
 The algorithm illuminates how the filler-role scheme encodes information relevant to the task. First, one of the initial facts that the decoder must determine is whether the sequence is a single command, a pair of subcommands connected by \textcolor{violet}{$\t{and}$}, or a pair of subcommands connected by \textcolor{violet}{$\t{after}$}; such a determination is crucial for knowing the basic structure of the output (how many actions to perform and in what order). We have found that role 30 is used for, and only for, the filler \textcolor{violet}{$\t{and}$}, while role 17 is used in and only in sequences containing \textcolor{violet}{$\t{after}$} (usually with \textcolor{violet}{$\t{after}$} as the filler bound to role 17). Thus, the decoder can use these roles to tell which basic structure is in play: if role 30 is present, it is an \textcolor{violet}{$\t{and}$} sequence; if role 17 is present, it is an \textcolor{violet}{$\t{after}$} sequence; otherwise it is a single command.
@@ -268,24 +268,24 @@ $
         \includegraphics[width=\textwidth]{images/rldn/sub-accuracy.png}
         \label{fig:surgery}
     \end{subfigure}
-    \caption{Left: Example of successive constituent surgeries. The roles assigned to the input symbols are indicated in the first line (e.g., \textcolor{violet}{$\t{run}$} was assigned role $11$). Altered output symbols are in blue. The model produces the correct outputs for all cases shown here. Right: Mean constituent-surgery accuracy across three runs. Standard deviation is below 1\% for each number of substitutions. (Sec.~\ref{sec:Surgery})}
+    \caption{Left: Example of successive constituent surgeries. The roles assigned to the input symbols are indicated in the first line (e.g., \textcolor{violet}{$\t{run}$} was assigned role $11$). Altered output symbols are in blue. The model produces the correct outputs for all cases shown here. Right: Mean constituent-surgery accuracy across three runs. Standard deviation is below 1\% for each number of substitutions. (Sec.~\ref{sec:rldn-Surgery})}
     \label{fig:Figs12}
     \end{center}
 \end{figure*}
 
-\subsection{Precision constituent-surgery on internal representations produces desired outputs} \label{sec:Surgery}
+\subsection{Precision constituent-surgery on internal representations produces desired outputs} \label{sec:rldn-Surgery}
 
 The substitution-accuracy results above show that if the \textit{entire} learned representation is replaced by \RLN's approximation, the output remains correct. But do the \textit{individual word embeddings} in this TPR have the appropriate causal consequences when processed by the decoder?%\footnote{Historically, this question has had considerable significance: the original compositionality challenge to neural network models of cognition by Fodor and colleagues \citep{fodor1988connectionism} insisted that constituents of cognitive representations must individually be \textit{causally efficacious} in order for those constituents to provide an explanation of the compositionality of cognition \citep{fodor1990connectionism, fodor1997connectionism}. That TPRs meet the challenge of explaining compositionality was argued in \citet{smolensky1987constituent,smolensky1991connectionism}.}
 
 To address this causal question \citep{pearl2000causality}, we actively intervene on the constituent structure of the internal representations by replacing one constituent with another syntactically equivalent
-one,\footnote{We extract syntactic categories from the SCAN grammar \citep[Supplementary Fig. 6]{lake2018generalization} by saying that two words belong to the same category if every occurrence of one could be grammatically replaced by the other. We do not replace occurrences of \textcolor{violet}{$\t{and}$} and \textcolor{violet}{$\t{after}$} since the presence of either of these words causes substantial changes in the roles assigned within the sequence (Appendix \ref{sec:Alg}).} and see whether this produces the expected change in the output of the decoder.
-We take the encoding generated by the RNN encoder $\c{E}$ for an input such as \textcolor{violet}{$\t{jump \hs opposite \hs left}$}, subtract the vector embedding of the \textcolor{violet}{$\t{opposite}$} constituent, add the embedding of the \textcolor{violet}{$\t{around}$} constituent, and see whether this causes the output to change from the correct output for \textcolor{violet}{$\t{jump \hs opposite \hs left}$ ($\t{TL \hs TL \hs JUMP)}$} to the correct output for \textcolor{violet}{$\t{jump \hs around \hs left}$ ($\t{TL \hs JUMP \hs TL \hs JUMP \hs TL \hs JUMP \hs TL \hs JUMP}$)}. The roles in these constituents are determined by the algorithm of Appendix \ref{sec:Alg}. If changing a word leads other roles in the sequence to change (according to the algorithm), we update the encoding with those new roles as well. Such surgery can be viewed as a more general extension of the analogy approach used by \citet{mikolov2013linguistic} for analysis of word embeddings.
+one,\footnote{We extract syntactic categories from the SCAN grammar \citep[Supplementary Fig. 6]{lake2018generalization} by saying that two words belong to the same category if every occurrence of one could be grammatically replaced by the other. We do not replace occurrences of \textcolor{violet}{$\t{and}$} and \textcolor{violet}{$\t{after}$} since the presence of either of these words causes substantial changes in the roles assigned within the sequence (Appendix \ref{sec:rldn-Alg}).} and see whether this produces the expected change in the output of the decoder.
+We take the encoding generated by the RNN encoder $\c{E}$ for an input such as \textcolor{violet}{$\t{jump \hs opposite \hs left}$}, subtract the vector embedding of the \textcolor{violet}{$\t{opposite}$} constituent, add the embedding of the \textcolor{violet}{$\t{around}$} constituent, and see whether this causes the output to change from the correct output for \textcolor{violet}{$\t{jump \hs opposite \hs left}$ ($\t{TL \hs TL \hs JUMP)}$} to the correct output for \textcolor{violet}{$\t{jump \hs around \hs left}$ ($\t{TL \hs JUMP \hs TL \hs JUMP \hs TL \hs JUMP \hs TL \hs JUMP}$)}. The roles in these constituents are determined by the algorithm of Appendix \ref{sec:rldn-Alg}. If changing a word leads other roles in the sequence to change (according to the algorithm), we update the encoding with those new roles as well. Such surgery can be viewed as a more general extension of the analogy approach used by \citet{mikolov2013linguistic} for analysis of word embeddings.
 An example of applying a sequence of five such constituent surgeries to a sequence is shown in Figure~\ref{fig:Figs12} (left). Even long sequences of such replacements produce the expected change in the decoder's output with high accuracy (Figure~\ref{fig:Figs12}, right), indicating that the compositional structure discovered by ROLE does play a central causal role in the model's behavior.
 
-\section{Partially-compositional NLP tasks} \label{sec:NLP}
+\section{Partially-compositional NLP tasks} \label{sec:rldn-NLP}
 The previous sections explored fully-compositional tasks where there is a strong signal for compositionality. In this section, we explore whether the representations of NNs trained on tasks that are only partially-compositional also capture compositional structure. Partially-compositional tasks are especially challenging to model because a fully-compositional model may enforce compositionality too strictly to handle the non-compositional aspects of the task, while a model without a compositional bias may not learn any sort of compositionality from the weak cues in the training set.
 
-We test four sentence encoding models for compositionality: InferSent \citep{conneau2017supervised}, Skip-thought \citep{kiros2015skip}, Stanford Sentiment Model (SST) \citep{socher2013recursive}, and SPINN \citep{bowman2016fast}. For each of these models, we extract the encodings for the SNLI premise sentences \citep{bowman2015large}. We use the extracted embeddings to train \RLN\ with 50 roles available (additional training information provided in Appendix \ref{sec:role-sentences}).
+We test four sentence encoding models for compositionality: InferSent \citep{conneau2017supervised}, Skip-thought \citep{kiros2015skip}, Stanford Sentiment Model (SST) \citep{socher2013recursive}, and SPINN \citep{bowman2016fast}. For each of these models, we extract the encodings for the SNLI premise sentences \citep{bowman2015large}. We use the extracted embeddings to train \RLN\ with 50 roles available (additional training information provided in Appendix \ref{sec:rldn-role-sentences}).
 
 \begin{table*}[h!]
     \centering
@@ -299,18 +299,18 @@ We test four sentence encoding models for compositionality: InferSent \citep{con
 		SPINN & \textbf{.139} & .151 & .147 & .184 & .189 & .181 & .178 & .176 \\ \bottomrule
 		\end{tabular}
 		}
-    \caption{\label{tab:sent-emb-mse}MSE loss for learned (bold) and hand-crafted role schemes on sentence embedding models. (Sec.~\ref{sec:NLP})}
+    \caption{\label{tab:sent-emb-mse}MSE loss for learned (bold) and hand-crafted role schemes on sentence embedding models. (Sec.~\ref{sec:rldn-NLP})}
 
 \end{table*}
 
-As a baseline, we also train TPEs that use pre-defined role schemes (hyperparameters described in Appendix \ref{sec:tpe-sentences}). For all of the sentence embedding models except Skip-thought, \RLN\ with continuous attention provides the lowest mean squared error at approximating the encoding (Table~\ref{tab:sent-emb-mse}). The BOW (bag-of-words) role scheme represents a TPE that uses a degenerate `compositional' structure which assigns the same role to every filler; for each of the sentence embedding models tested except for SST, performance is  within the same order of magnitude as structure-free BOW. \citet{parikh2016decomposable} found that a bag-of-words model scores extremely well on Natural Language Inference despite having no knowledge of word order, showing that structure is not necessary to perform well on the sorts of tasks commonly used to train sentence encoders. Although not definitive, the \RLN\ results provide no evidence that these models' sentence embeddings possess compositional structure.
+As a baseline, we also train TPEs that use pre-defined role schemes (hyperparameters described in Appendix \ref{sec:rldn-tpe-sentences}). For all of the sentence embedding models except Skip-thought, \RLN\ with continuous attention provides the lowest mean squared error at approximating the encoding (Table~\ref{tab:sent-emb-mse}). The BOW (bag-of-words) role scheme represents a TPE that uses a degenerate `compositional' structure which assigns the same role to every filler; for each of the sentence embedding models tested except for SST, performance is  within the same order of magnitude as structure-free BOW. \citet{parikh2016decomposable} found that a bag-of-words model scores extremely well on Natural Language Inference despite having no knowledge of word order, showing that structure is not necessary to perform well on the sorts of tasks commonly used to train sentence encoders. Although not definitive, the \RLN\ results provide no evidence that these models' sentence embeddings possess compositional structure.
 
 In future work, it would be interesting to perform a similar analysis on Transformer architectures \citep{vaswani2017attention}. Such models have displayed impressive syntactic generalization \cite{hu2020systematic} and few-shot learning of compositional tasks \cite{brown2020language}, both of which suggest that they learn substantial degrees of compositional structure; thus, ROLE may be more likely to discover meaningful structure in Transformers than in the sentence-embedding models in Table \ref{tab:sent-emb-mse}. Further work has found impressive degrees of syntactic structure in Transformer encodings \cite{hewitt2019structural}, suggesting that there may well be compositional structure for ROLE to pick up on. The main difficulty in applying ROLE to Transformers---and the reason we did not include Transformers in our study---is that the sentence representation used by a Transformer is typically viewed as a variable-sized collection of vectors, whereas ROLE requires single-vector representations; this discrepancy must be overcome if ROLE is to be applied to Transformers. 
 
 One past work \cite{jawahar-etal-2019-bert} has applied ROLE's precursor (the TPDN of \citet{mccoy}) to Transformer representations by choosing the [CLS] token of BERT \cite{devlin2019bert} as the single-vector sentence encoding to decompose. \citeauthor{jawahar-etal-2019-bert} found that these encodings were approximated better by human-specified tree-position roles than by other human-specified candidates (e.g., left-to-right and right-to-left roles). By removing the constraint of requiring human-designed role schemes, ROLE may be able to discover other role schemes that approximate BERT's encodings even more closely.
 % The main difficulty in applying ROLE to Transformers---and the reason we did not include Transformers in our study---is that the sentence representation used by a Transformer is typically viewed as a variable-sized collection of vectors, whereas ROLE requires single-vector representations; this discrepancy must be overcome if ROLE is to be applied to Transformers.
 
-\section{Conclusion} \label{sec:Conclusion}
+\section{Conclusion} \label{sec:rldn-Conclusion}
 
 We have introduced \RLN, a neural network that learns to approximate the representations of an existing target neural network $\c{E}$ using an explicit symbolic structure. \RLN\ successfully discovers symbolic structure in a standard RNN trained on the fully-compositional SCAN semantic parsing task, even though the RNN has no such structure explicitly present in its architecture. This yields a closed-form equation for the RNN's encoding of any input string. 
 When applied to sentence embedding models trained on partially-compositional tasks, \RLN\ performs better than hand-specified hypothesized structures but still provides little evidence that the sentence encodings represent compositional structure. 

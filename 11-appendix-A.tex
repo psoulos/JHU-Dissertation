@@ -8,7 +8,7 @@
 \chapter{Appendix for Discovering the Compositional Structure of Vector Representations with Role Learning Networks} \label{chap:appendix-a}
 
 %% add your chapter text here
-\section{Designed role schemes} \label{sec:role-schemes}
+\section{Designed role schemes} \label{sec:rldn-role-schemes}
 We use six hand-specified role schemes as a baseline to compare the learned role schemes against. Examples of each role scheme are shown in Table \ref{tab:rolestwo}.
 
 \begin{enumerate}
@@ -37,7 +37,7 @@ Bag of words & r$_0$&r$_0$&r$_0$&r$_0$ & r$_0$&r$_0$&r$_0$&r$_0$&r$_0$&r$_0$ \\ 
     \caption{\label{tab:rolestwo}The assigned roles for two sequences, 3116 and 523197. Table reproduced from \citet{mccoy}.}
 \end{table*}
 
-\section{ROLE regularization} \label{sec:role-regulatization}
+\section{ROLE regularization} \label{sec:rldn-role-regulatization}
 
 Letting $\mA = \{\va_t \}_{t=1}^T$, the regularization term applied during ROLE training is $R = \lambda (R_1 + R_2 + R_3)$, where $\lambda$ is a regularization hyperparameter and:
 \begin{align*} %\label{eq:reg}
@@ -51,11 +51,11 @@ In a discrete symbolic structure, each position can hold at most one symbol, and
 In the vector $\vs_\mA = \sum_{t=1}^T \va_t$, the $\rho^\r{th}$ element is the total attention weight, over all symbols in the string, assigned to the $\rho^{\r{th}}$ role: in the discrete case, this must be 0 (if no symbol is assigned this role) or 1 (if a single symbol is assigned this role).
 Thus $R_3$ is minimized when all elements of $\vs$ are 0 or 1 ($R_3$ is similar to $R_1$, but with squared terms since we are no longer assured each element is at most 1). It is important to normalize each role embedding in the role matrix \textbf{R} so that small attention weights have correspondingly small impacts on the weighted-sum role embedding.
 
-\section{RNN trained on SCAN} \label{sec:rnn-scan}
+\section{RNN trained on SCAN} \label{sec:rldn-rnn-scan}
 
 To train the standard RNN on SCAN, we ran a limited hyperparameter search similar to the procedure in \citet{lake2018generalization}. Since our goal was to produce a single embedding that captured the entire input sequence, we fixed the architecture as a GRU with a single hidden layer. We did not train models with attention, to investigate whether a standard RNN could capture compositionality in its single bottleneck encoding. The remaining hyperparameters were hidden dimension and dropout. We ran a search over the hidden dimension sizes of 50, 100, 200, and 400 as well as dropout with a value of 0, .1, and .5 applied to the word embeddings and recurrent layer. Each network was trained with the Adam optimizer \citep{kingma2015adam} and a learning rate of .001 for 100,000 steps with a batch-size of 1. The best performing network had a hidden dimension or 100 and dropout of .1.
 
-\section{\RLN\ trained on SCAN} \label{sec:role-scan}
+\section{\RLN\ trained on SCAN} \label{sec:rldn-role-scan}
 
 For the \RLN\ models trained to approximate the GRU encoder trained on SCAN, we used a filler dimension of 100, and a role dimension of 50 with 50 roles available. For training, we used the Adam \citep{kingma2015adam} optimizer with a learning rate of .001, batch size 32, and an early stopping patience of 10. The role assignment module used a bidirectional 2-layer LSTM \citep{Hochreiter:1997:LSM:1246443.1246450}. We performed a hyperparameter search over the regularization coefficient $\lambda$ using the values in the set [.1, .02, .01]. The best performing value was .02, and we used this model in our analysis.
 
@@ -63,7 +63,7 @@ For the \RLN\ models trained to approximate the GRU encoder trained on SCAN, we 
 
 The algorithm below characterizes our post-hoc interpretation of which roles the Role Learner will assign to elements of the input to the SCAN model. This algorithm was created by hand based on an analysis of the Role Learner's outputs for the elements of the SCAN training set. The algorithm works equally well on examples in the training set and the test set; on both datasets, it exactly matches the roles chosen by the Role Learner for 98.7\% of sequences (20,642 out of 20,910).%\footnote{This figure of 98.7\% is so constant across datasets presumably because the synthetic nature of the SCAN dataset means that any reasonably-sized sample from it will be similarly representative of the entire dataset.}
 
-\section{A role-assignment algorithm implicitly learned by the SCAN seq2seq encoder} \label{sec:Alg}
+\section{A role-assignment algorithm implicitly learned by the SCAN seq2seq encoder} \label{sec:rldn-Alg}
 
 The input sequences have three basic types that are relevant to determining the role assignment: sequences that contain \textit{and} (e.g., \textit{jump around left and walk thrice}), sequences that contain  \textit{after} (e.g., \textit{jump around left after walk thrice}), and sequences without \textit{and} or \textit{after} (e.g., \textit{turn opposite right thrice}). Within commands containing \textit{and} or \textit{after}, it is convenient to break the command down into the command before the connecting word and the command after it; for example, in the command \textit{jump around left after walk thrice}, these two components would be \textit{jump around left} and \textit{walk thrice}. 
 
@@ -134,7 +134,7 @@ The input sequences have three basic types that are relevant to determining the 
 \noindent
 To show how this works with an example, consider the input \textit{jump around left after walk thrice}. The command before \textit{after} is \textit{jump around left}. \textit{left}, as the last word, is given role 8. \textit{around}, as the second-to-last word, gets role 36. \textit{jump}, as a first word that is not also the last or second-to-last word gets role 11. The command after \textit{after} is \textit{walk thrice}. \textit{thrice}, as the last word, gets role 46. \textit{walk}, as the second-to-last word, gets role 4. Finally, \textit{after} gets role 17 because no other elements have been assigned role 17 yet. These predicted outputs match those given by the Role Learner.
 
-\section{Discussion of the algorithm} \label{sec:AlgDisc}
+\section{Discussion of the algorithm} \label{sec:rldn-AlgDisc}
 
 We offer several observations about this algorithm.
 
@@ -162,12 +162,12 @@ Were it not for ROLE’s ability to characterize the representations generated b
 
 \end{enumerate}
 
-\section{TPEs trained on sentence embedding models} \label{sec:tpe-sentences}
+\section{TPEs trained on sentence embedding models} \label{sec:rldn-tpe-sentences}
 
 For each sentence embedding model, we trained three randomly initialized TPEs for each role scheme and selected the best performing one as measured by the lowest MSE. For each TPE, we used the original filler embedding from the sentence embedding model. This filler dimensionality is 25 for SST, 300 for SPINN and InferSent, and 620 for Skipthought. We applied a linear transformation to the pre-trained filler embedding where the input size is the dimensionality of the pre-trained embedding and the output size is also the dimensionality of the pre-trained embedding. This linearly transformed embedding is used as the filler vector in the filler-role binding in the TPE. For each TPE, we use a role dimension of 50. Training was done with a batch size of 32 using the Adam optimizer with a learning rate of .001.
 
 To generate tree roles from the English sentences, we used the constituency parser released in version 3.9.1 of Stanford CoreNLP \citep{klein2003accurate}.
 
-\section{\RLN\ trained on sentence embedding models} \label{sec:role-sentences}
+\section{\RLN\ trained on sentence embedding models} \label{sec:rldn-role-sentences}
 
 For each sentence embedding model, we trained three randomly initialized \RLN\ models and selected the best performing one as measured by the lowest MSE. We used the original filler embedding from the sentence embedding model (25 for SST, 300 for SPINN and InferSent, and 620 for Skipthought). We applied a linear transformation to the pre-trained filler embedding where the input size is the dimensionality of the pre-trained embedding and the output size is also the dimensionality of the pre-trained embedding. This linearly transformed embedding is used as the filler vector in the filler-role binding in the TPE. We also applied a similar linear transformation to the pre-trained filler embedding before input to the role learner LSTM. For each \RLN\ model, we provide up to 50 roles with a role dimension of 50. Training was done with a batch size of 32 using the ADAM optimizer with a learning rate of .001. We performed a hyperparameter search over the regularization coefficient $\lambda$ using the values in the set $\{1, 0.1, 0.01, 0.001, 0.0001 \}$. For SST, SPINN, InferSent and SST, respectively, the best performing network used $\lambda=0.001, 0.01, 0.001, 0.1$. 
