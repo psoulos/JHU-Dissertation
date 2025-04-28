@@ -5,7 +5,169 @@
 \makeatother
 \renewcommand{\thechapter}{\Alph{chapter}}
 
-\chapter{Some necessary information} \label{chap:appendix-a}
+\chapter{Appendix for Discovering the Compositional Structure of Vector Representations with Role Learning Networks} \label{chap:appendix-a}
 
 %% add your chapter text here
-\Blindtext[3]
+\section{Designed role schemes} \label{sec:role-schemes}
+We use six hand-specified role schemes as a baseline to compare the learned role schemes against. Examples of each role scheme are shown in Table \ref{tab:rolestwo}.
+
+\begin{enumerate}
+	\item Left-to-right (LTR): Each filler's role is its index in the sequence, counting from left to right.
+	\item Right-to-left (RTL): Each filler's role is its index in the sequence, counting from right to left.
+	\item Bidirectional (Bi): Each filler's role is a pair of indices, where the first index counts from left to right, and the second index counts from right to left.
+	\item Tree: Each filler's role is given by its position in a tree. This depends on a tree parsing algorithm.
+	\item Wickelroles (Wickel): Each filler's role is a 2-tuple containing the filler before it and the filler after it. \citep{wickelgren1969context}
+	\item Bag-of-words (BOW): Each filler is assigned the same role. The position and context of the filler is ignored.
+\end{enumerate}
+
+\begin{table*}[ht]
+    \centering
+     \resizebox{\textwidth}{!}{
+    \begin{tabular} {l|llll|llllll}
+    \toprule
+    & 3 & 1 & 1& 6 & 5 & 2 & 3 & 1 & 9 & 7 \\ \midrule
+    Left-to-right & 0 &1&2&3 & 0&1&2&3&4&5\\
+Right-to-left & 3&2&1&0 & 5&4&3&2&1&0 \\
+Bidirectional & (0, 3)&(1, 2)&(2, 1)&(3, 0) & (0, 5)&(1, 4)&(2, 3)&(3, 2)&(4, 1)&(5, 0) \\
+Wickelroles & \#\_1& 3\_1& 1\_6& 1\_\# & \#\_2& 5\_3& 2\_1& 3\_9& 1\_7& 9\_\# \\
+Tree & L& RLL& RLR& RR & LL& LRLL& LRLR& LRRL& LRRR& R \\
+Bag of words & r$_0$&r$_0$&r$_0$&r$_0$ & r$_0$&r$_0$&r$_0$&r$_0$&r$_0$&r$_0$ \\ \bottomrule
+\end{tabular}
+}
+    \caption{\label{tab:rolestwo}The assigned roles for two sequences, 3116 and 523197. Table reproduced from \citet{mccoy}.}
+\end{table*}
+
+\section{ROLE regularization} \label{sec:role-regulatization}
+
+Letting $\mA = \{\va_t \}_{t=1}^T$, the regularization term applied during ROLE training is $R = \lambda (R_1 + R_2 + R_3)$, where $\lambda$ is a regularization hyperparameter and:
+\begin{align*} %\label{eq:reg}
+    R_1(\mA) &= \sum_{t=1}^T\sum_{\rho=1}^{n_\rR} [\va_t]_\rho(1-[\va_t]_\rho); \hspace{1.5mm}\\
+    R_2(\mA) &= -\sum_{t=1}^{T}\sum_{\rho=1}^{n_\rR} [\va_t]_\rho^2; \hspace{1.5mm}\\
+    R_3(\mA) &= \sum_{\rho=1}^{n_\rR} \left( [\vs_\mA]_\rho (1 - [\vs_\mA]_\rho) \right)^2
+\end{align*}
+Since each $\va_t$ results from a softmax, its elements are positive and sum to 1. Thus the factors in $R_1(\mA)$ are all non-negative, so $R_1$ assumes its minimal value of 0 when each $\va_t$ has binary elements; since these elements must sum to 1, such an $\va_t$ must be one-hot.
+$R_2(\mA)$ is also minimized when each $\va_t$ is one-hot because when a vector's $L^1$ norm is 1, its $L^2$ norm is maximized when it is one-hot. Although each of these terms individually favor one-hot vectors, empirically we find that using both terms helps the training process.
+In a discrete symbolic structure, each position can hold at most one symbol, and the final term $R_3$ in \RLN's regularizer $R$ is designed to encourage this.
+In the vector $\vs_\mA = \sum_{t=1}^T \va_t$, the $\rho^\r{th}$ element is the total attention weight, over all symbols in the string, assigned to the $\rho^{\r{th}}$ role: in the discrete case, this must be 0 (if no symbol is assigned this role) or 1 (if a single symbol is assigned this role).
+Thus $R_3$ is minimized when all elements of $\vs$ are 0 or 1 ($R_3$ is similar to $R_1$, but with squared terms since we are no longer assured each element is at most 1). It is important to normalize each role embedding in the role matrix \textbf{R} so that small attention weights have correspondingly small impacts on the weighted-sum role embedding.
+
+\section{RNN trained on SCAN} \label{sec:rnn-scan}
+
+To train the standard RNN on SCAN, we ran a limited hyperparameter search similar to the procedure in \citet{lake2018generalization}. Since our goal was to produce a single embedding that captured the entire input sequence, we fixed the architecture as a GRU with a single hidden layer. We did not train models with attention, to investigate whether a standard RNN could capture compositionality in its single bottleneck encoding. The remaining hyperparameters were hidden dimension and dropout. We ran a search over the hidden dimension sizes of 50, 100, 200, and 400 as well as dropout with a value of 0, .1, and .5 applied to the word embeddings and recurrent layer. Each network was trained with the Adam optimizer \citep{kingma2015adam} and a learning rate of .001 for 100,000 steps with a batch-size of 1. The best performing network had a hidden dimension or 100 and dropout of .1.
+
+\section{\RLN\ trained on SCAN} \label{sec:role-scan}
+
+For the \RLN\ models trained to approximate the GRU encoder trained on SCAN, we used a filler dimension of 100, and a role dimension of 50 with 50 roles available. For training, we used the Adam \citep{kingma2015adam} optimizer with a learning rate of .001, batch size 32, and an early stopping patience of 10. The role assignment module used a bidirectional 2-layer LSTM \citep{Hochreiter:1997:LSM:1246443.1246450}. We performed a hyperparameter search over the regularization coefficient $\lambda$ using the values in the set [.1, .02, .01]. The best performing value was .02, and we used this model in our analysis.
+
+%A co-occurrence matrix of filler:role bindings is shown in Figure \ref{fig:scan-heatmap}.
+
+The algorithm below characterizes our post-hoc interpretation of which roles the Role Learner will assign to elements of the input to the SCAN model. This algorithm was created by hand based on an analysis of the Role Learner's outputs for the elements of the SCAN training set. The algorithm works equally well on examples in the training set and the test set; on both datasets, it exactly matches the roles chosen by the Role Learner for 98.7\% of sequences (20,642 out of 20,910).%\footnote{This figure of 98.7\% is so constant across datasets presumably because the synthetic nature of the SCAN dataset means that any reasonably-sized sample from it will be similarly representative of the entire dataset.}
+
+\section{A role-assignment algorithm implicitly learned by the SCAN seq2seq encoder} \label{sec:Alg}
+
+The input sequences have three basic types that are relevant to determining the role assignment: sequences that contain \textit{and} (e.g., \textit{jump around left and walk thrice}), sequences that contain  \textit{after} (e.g., \textit{jump around left after walk thrice}), and sequences without \textit{and} or \textit{after} (e.g., \textit{turn opposite right thrice}). Within commands containing \textit{and} or \textit{after}, it is convenient to break the command down into the command before the connecting word and the command after it; for example, in the command \textit{jump around left after walk thrice}, these two components would be \textit{jump around left} and \textit{walk thrice}. 
+
+\begin{itemize}
+    \item Sequence with \textit{and}:
+    \begin{itemize}
+        \item Elements of the command before \textit{and}:
+        \begin{itemize}
+            \item Last word: 28
+            \item First word (if not also last word): 46
+            \item \textit{opposite} if the command ends with \textit{thrice}: 22
+            \item Direction word between \textit{opposite} and \textit{thrice}: 2
+            \item \textit{opposite} if the command does not end with \textit{thrice}: 2
+            \item Direction word after \textit{opposite} but not before \textit{thrice}: 4
+            \item \textit{around}: 22
+            \item Direction word after \textit{around}: 2
+            \item Direction word between an action word and \textit{twice} or \textit{thrice}: 2
+        \end{itemize}
+        \item Elements of the command before \textit{and}:
+        \begin{itemize}
+            \item First word: 11
+            \item Last word (if not also the first word): 36
+            \item Second-to-last word (if not also the first word): 3
+            \item Second of four words: 24
+        \end{itemize}
+        \item \textit{and}: 30
+    \end{itemize}
+    \item Sequence with \textit{after}:
+    \begin{itemize}
+        \item Elements of the command before \textit{after}:
+        \begin{itemize}
+            \item Last word: 8
+            \item Second-to-last word: 36
+            \item First word (if not the last or second-to-last word): 11
+            \item Second word (if not the last or second-to-last word): 3
+        \end{itemize}
+        \item Elements of the command after \textit{after}:
+        \begin{itemize}
+            \item Last word: 46
+            \item Second-to-last word: 4
+            \item First word if the command ends with \textit{around right}: 4
+            \item First word if the command ends with \textit{thrice} and contains a rotation: 10
+            \item First word if the command does not end with \textit{around right} and does not contain both \textit{thrice} and a rotation: 17
+            \item Second word if the command ends with \textit{thrice}: 17
+            \item Second word if the command does not end with \textit{thrice}: 10
+        \end{itemize}
+        \item \textit{after}: 17 if no other word has role 17 or if the command after \textit{after} ends with \textit{around left}; 43 otherwise
+    \end{itemize}
+    \item Sequence without \textit{and} or \textit{after}:
+    \begin{itemize}
+        \item Action word directly before a cardinality: 4
+        \item Action word before, but not directly before, a cardinality: 34
+        \item \textit{thrice} directly after an action word: 2
+        \item \textit{twice} directly after an action word: 2
+        \item \textit{opposite} in a sequence ending with \textit{twice}: 8
+        \item \textit{opposite} in a sequence ending with \textit{thrice}: 34
+        \item \textit{around} in a sequence ending with a cardinality:  22
+        \item Direction word directly before a cardinality: 2
+        \item Action word in a sequence without a cardinality: 46
+        \item \textit{opposite} in a sequence without a cardinality: 2
+        \item Direction after \textit{opposite} in a sequence without a cardinality: 26
+        \item \textit{around} in a sequence without a cardinality: 3
+        \item Direction after \textit{around} in a sequence without a cardinality: 22
+        \item Direction directly after an action in a sequence without a cardinality: 22
+    \end{itemize}
+\end{itemize}
+
+\noindent
+To show how this works with an example, consider the input \textit{jump around left after walk thrice}. The command before \textit{after} is \textit{jump around left}. \textit{left}, as the last word, is given role 8. \textit{around}, as the second-to-last word, gets role 36. \textit{jump}, as a first word that is not also the last or second-to-last word gets role 11. The command after \textit{after} is \textit{walk thrice}. \textit{thrice}, as the last word, gets role 46. \textit{walk}, as the second-to-last word, gets role 4. Finally, \textit{after} gets role 17 because no other elements have been assigned role 17 yet. These predicted outputs match those given by the Role Learner.
+
+\section{Discussion of the algorithm} \label{sec:AlgDisc}
+
+We offer several observations about this algorithm.
+
+\begin{enumerate}
+    \item 
+This algorithm may seem convoluted, but a few observations can illuminate how the roles assigned by such an algorithm support success on the SCAN task. First, a sequence will contain role 30 if and only if it contains \textit{and}, and it will contain role 17 if and only if it contains \textit{after}. Thus, by implicitly checking for the presence of these two roles (regardless of the fillers bound to them), the decoder can tell whether the output involves one or two basic commands, where the presence of \textit{and} or \textit{after} leads to two basic commands and the absence of both leads to one basic command. Moreover, if there are two basic commands, whether it is role 17 or role 30 that is present can tell the decoder whether the input order of these commands also corresponds to their output order (when it is \textit{and} in play, i.e., role 30), or if the input order is reversed (when it is \textit{after} in play, i.e., role 17).
+
+With these basic structural facts established, the decoder can begin to decode the specific commands. For example, if the input is a sequence with \textit{after}, it can begin with the command after \textit{after}, which it can decode by checking which fillers are bound to the relevant roles for that type of command.
+
+It may seem odd that so many of the roles are based on position (e.g., ``first word" and ``second-to-last word"), rather than more functionally-relevant categories such as ``direction word." However, this approach may actually be more efficient: Each command consists of a single mandatory element (namely, an action word such as \textit{walk} or \textit{jump}) followed by several optional modifiers (namely, rotation words, direction words, and cardinalities). Because most of the word categories are optional, it might be inefficient to check for the presence of, e.g., a cardinality, since many sequences will not have one. By contrast, every sequence will have a last word, and checking the identity of the last word provides much functionally-relevant information: if that word is not a cardinality, then the decoder knows that there is no cardinality present in the command (because if there were, it would be the last word); and if it is a cardinality, then that is important to know, because the presence of \textit{twice} or \textit{thrice} can dramatically affect the shape of the output sequence. In this light, it is unsurprising that the SCAN encoder has implicitly learned several different roles that essentially mean the last element of a particular subcommand.
+\item
+The algorithm does not constitute a simple, transparent role scheme. But its job is to describe the representations that the original network produces, and we have no a priori expectation about how complex that process may be. The role-assignment algorithm implicitly learned by ROLE is interpretable locally (each line is readily expressible in simple English), but not intuitively transparent globally. We see this as a positive result, in two respects.
+
+First, it shows why ROLE is crucial: no human-generated role scheme would provide a good approximation to this algorithm. Such an algorithm can only be identified because ROLE is able to use gradient descent to find role schemes far more complex than any we would hypothesize intuitively. This enables us to analyze networks far more complex than we could analyze previously, being necessarily limited to hand-designed role schemes based on human intuitions about how to perform the task. 
+
+Second, when future work illuminates the computation in the original SCAN GRU seq2seq decoder, the baroqueness of the role-assignment algorithm that ROLE has shown to be implicit in the seq2seq encoder can potentially explain certain limitations in the original model, which is known to suffer from severe failures of systematic generalization outside the training distribution (Lake and Baroni, 2018). It is reasonable to hypothesize that systematic generalization requires that the encoder learn an implicit role scheme that is relatively simple and highly compositional. Future proposals for improving the systematic generalization of models on SCAN can be examined using ROLE to test the hypothesis that greater systematicity requires greater compositional simplicity in the role scheme implicitly learned by the encoder.
+
+\item
+While the role-assignment algorithm of A.8.1 may not be simple, from a certain perspective, 
+it is quite surprising that it is not far more complex. Although ROLE is provided 50 roles to learn to deploy as it likes, it only chooses to use 16 of them (only 16 are ever selected as the $\argmax(\va_t)$; see Sec. 6.1). Furthermore, the SCAN grammar generates 20,910 input sequences, containing a total of 151,688 words (an average of 7.25 words per input). This means that, if one were to generate a series of conditional statements to determine which role is assigned to each word in every context, this could in theory require up to 151,688 conditionals (e.g., ``if the filler is `jump’ in the context `walk thrice after \underline{\hspace{.25 in}} opposite left’, then assign role 17''). However, our algorithm involves just 47 conditionals. This reduction helps explain how the model performs so well on the test set: If it used many more of the 151,688 possible conditional rules, it would completely overfit the training examples in a way that would be unlikely to generalize. The 47-conditional algorithm we found is more likely to generalize by abstracting over many details of the context.
+
+\item
+Were it not for ROLE’s ability to characterize the representations generated by the original encoder in terms of implicit roles, providing an equally complete and accurate interpretation of those representations would necessarily require identifying the conditions determining the activation level of each of the 100 neurons hosting those representations. It seems to us grossly overly optimistic to estimate that each neuron’s activation level in the representation of a given input could be characterized by a property of the input statable in, say, two lines of roughly 20 words/symbols; yet even then, the algorithm would require 200 lines, whereas the algorithm in A.8.1 requires 47 lines of that scale. Thus, by even such a crude estimate of the degree of complexity expected for an algorithm describing the representations in terms of neuron activities, the algorithm we find, stated over roles, is 4 times simpler.
+
+
+\end{enumerate}
+
+\section{TPEs trained on sentence embedding models} \label{sec:tpe-sentences}
+
+For each sentence embedding model, we trained three randomly initialized TPEs for each role scheme and selected the best performing one as measured by the lowest MSE. For each TPE, we used the original filler embedding from the sentence embedding model. This filler dimensionality is 25 for SST, 300 for SPINN and InferSent, and 620 for Skipthought. We applied a linear transformation to the pre-trained filler embedding where the input size is the dimensionality of the pre-trained embedding and the output size is also the dimensionality of the pre-trained embedding. This linearly transformed embedding is used as the filler vector in the filler-role binding in the TPE. For each TPE, we use a role dimension of 50. Training was done with a batch size of 32 using the Adam optimizer with a learning rate of .001.
+
+To generate tree roles from the English sentences, we used the constituency parser released in version 3.9.1 of Stanford CoreNLP \citep{klein2003accurate}.
+
+\section{\RLN\ trained on sentence embedding models} \label{sec:role-sentences}
+
+For each sentence embedding model, we trained three randomly initialized \RLN\ models and selected the best performing one as measured by the lowest MSE. We used the original filler embedding from the sentence embedding model (25 for SST, 300 for SPINN and InferSent, and 620 for Skipthought). We applied a linear transformation to the pre-trained filler embedding where the input size is the dimensionality of the pre-trained embedding and the output size is also the dimensionality of the pre-trained embedding. This linearly transformed embedding is used as the filler vector in the filler-role binding in the TPE. We also applied a similar linear transformation to the pre-trained filler embedding before input to the role learner LSTM. For each \RLN\ model, we provide up to 50 roles with a role dimension of 50. Training was done with a batch size of 32 using the ADAM optimizer with a learning rate of .001. We performed a hyperparameter search over the regularization coefficient $\lambda$ using the values in the set $\{1, 0.1, 0.01, 0.001, 0.0001 \}$. For SST, SPINN, InferSent and SST, respectively, the best performing network used $\lambda=0.001, 0.01, 0.001, 0.1$. 

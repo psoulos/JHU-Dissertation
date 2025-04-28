@@ -148,6 +148,11 @@
 
 %%%% SOME PRE-REQUISITE PACKAGES
 \usepackage[utf8]{inputenc}                 % for encoding input character (required)
+% Declare the stray combining acute accent so LaTeX maps it to \'{}
+\DeclareUnicodeCharacter{0301}{\'{}}
+\DeclareUnicodeCharacter{0302}{\'{}}
+% Declare the stray combining acute accent so LaTeX maps it to \'{}
+\DeclareUnicodeCharacter{0308}{\'{}}
 \usepackage[american]{babel}                % for different language typography
 \usepackage[T1]{fontenc}                    % for font encoding
 
@@ -174,16 +179,27 @@
 
 %%%% BIBLIOGRAPHIC PACKAGE (change the style or other options if you need to)
 %% Nature style bibliography
-\usepackage[backend=biber, defernumbers=true, style=nature, maxnames=99,
-     date=year, isbn=false, url=false, doi=true]{biblatex}
+%\usepackage[backend=biber, defernumbers=true, style=nature, maxnames=99, natbib=true,
+%     date=year, isbn=false, url=false, doi=true]{biblatex}
 
 %% APA style
-% \usepackage[backend=biber, defernumbers=true, style=apa, maxnames=99,
+%\usepackage[backend=biber, defernumbers=true, style=apa, maxnames=99, natbib=true,
 %     isbn=false, url=false, doi=true]{biblatex}
 
 %% IEEE style
-% \usepackage[backend=biber,style=ieee,defernumbers=true,maxnames=99, 
+%\usepackage[backend=biber,style=ieee,defernumbers=true,maxnames=99, natbib=true,
 %     date=year, isbn=false, url=false, doi=true]{biblatex}
+
+\usepackage[backend=biber,
+            style=authoryear,  % ← author–year
+            natbib=true,       % still allows \citet/\citep
+            maxcitenames=2,    % “Einstein et al.”
+            maxbibnames=99,
+            date=year,
+            isbn=false,
+            url=false,
+            doi=true
+           ]{biblatex}
 
 
 
@@ -223,6 +239,10 @@
 \usepackage{parskip}                        % default spacing around environments
 \usepackage{tikz}                           % drawing related package
 \usepackage{subcaption}                     % individual panel and caption
+
+\usepackage[most]{tcolorbox}
+\usepackage{soul}
+\input{math_commands.tex}
 
 %% add more packages and/or change options of the packages as needed
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% END LaTeX PACKAGES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
