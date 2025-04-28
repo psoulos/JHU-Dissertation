@@ -1,4 +1,499 @@
-\chapter{A few more additional information} \label{chap:appendix-b}
+\chapter{Appendix for Differentiable Tree Operations Promote Compositional Generalization} \label{chap:appendix-b}
 
 %% add your chapter text here
-\blindtext
+\section{Model Hyperparameter Selection}
+\raggedbottom
+
+For all of the models we evaluated, the HP searching and training was done in 3 steps:
+\begin{enumerate}
+   \item An optional exploratory random search over a wide range of HP values (using the Active$\leftrightarrow$Logical task) 
+   \item A grid search (repeat factor=3) over the most promising HP values from step 1 (using the Active$\leftrightarrow$Logical task) 
+   \item Training on the target tasks (repeat factor=5) 
+\end{enumerate}
+
+All of our models were trained on 1x V100 (16GB) virtual machines.  
+
+\subsection{\blackboard} \label{sec:blackboard-training}
+For the \blackboard\ models, we ran a 3x hyperparameter grid search over the following ranges. The best performing hyperparameter values are marked in bold.
+
+
+\begin{tabular}{ll}
+    Computation Steps: & [X+2, \textbf{(X+2)*2}] where X is the minimum number of steps required to complete a task \\  
+    weight\_decay: & [\textbf{.1}, .01] \\
+    Transformer model dimension: & [32, \textbf{64}] \\
+    Adam $\beta_2$: & [.98, \textbf{.95}] \\
+    Transformer dropout: & [0, \textbf{.1}] \\
+\end{tabular}
+
+The following hyperparameters were set for all models
+
+\begin{tabular}{ll}
+    lr\_warmup: & [10000] \\
+     lr\_decay: & [cosine] \\
+     training steps: & [20000] \\
+     Transformer encoder layers per computation step: & [1] \\
+     Transformer \# of heads: & [4] \\
+     Batch size: & [16] \\
+     d\_symbol: & \# symbols in the dataset \\
+     d\_role: & $2^{D+1}-1$ where D is the max depth in the dataset \\
+     Transformer non-linearity: & gelu \\
+     Optimizer: & Adam \\
+     Adam $\beta_1$: & .9 \\
+     Gradient clipping: & 1 \\
+     Transformer hidden dimension: & 4x Transformer model dimension \\
+\end{tabular}
+
+Notes:
+
+\begin{itemize}
+\item For the Passive$\leftrightarrow$Logical task, a batch size of 8 was used to reduce memory requirements. 
+\item Training runs that didn't achieve 90\% training accuracy were excluded from evaluation 
+\end{itemize}
+
+\pagebreak
+\subsection{Baselines}
+
+We search over model and training hyperparameters and choose the combination that has the highest (and in the case of ties, quickest to train) mean validation accuracy on Active \& Passive$\rightarrow$Logical. The best hyperparameter setting for each model was then used to train that model on all four of our tasks.  
+
+
+\subsubsection{Transformer}
+
+The Transformer 1x exploratory random search operated on the following HP values: 
+
+\begin{tabular}{ll}
+lr: & [.0001, .00005] \\
+lr\_warmup: & [0, 1000, 3000, 6000, 9000] \\
+lr\_decay: & [none, linear, factor, noam] \\
+lr\_decay\_factor: & [.9, .95, .99] \\
+lr\_patience: & [0, 5000] \\
+stop\_patience: & [0] \\
+weight\_decay: & [0, .001, .01] \\
+hidden: & [64, 96, 128, 256, 512, 768, 1024] \\
+n\_encoder\_layers: & [1, 2, 3, 4, 5, 6, 7, 8] \\
+n\_decoder\_layers: & [1, 2, 3, 4, 5, 6, 7, 8] \\
+dropout: & [0, .1, .2, .3, .4] \\
+filter: & [256, 512, 768, 1024, 2048, 3096, 4096] \\
+n\_heads: & [1, 2, 4, 8, 16] \\     
+\end{tabular}
+
+\vskip 0.15in
+The Transformer 3x grid search operated on the following HP values: 
+
+\begin{tabular}{ll}
+    hidden: & [768, 1024] \\
+    n\_encoder\_layers: & [1, 4] \\
+    n\_decoder\_layers: & [3, 4] \\
+    dropout: & [0] \\
+    filter: & [768, 1024] \\
+    n\_heads: & [2, 4] \\   
+\end{tabular}
+\vskip 0.15in
+
+The Transformer 5x training on the target tasks was done with these final HP values:
+
+\begin{tabular}{ll}
+    n\_steps: & 30\_000 \\  
+    log\_every: & 100 \\
+    eval\_every: & 1000 \\
+    batch\_size\_per\_gpu: & 256 \\
+    max\_tokens\_per\_gpu: & 20\_000   \\
+    lr: & .0001 \\
+    lr\_warmup: & 1000 \\
+    lr\_decay: & linear \\
+    lr\_decay\_factor: & .95 \\
+    lr\_patience: & 5000 \\
+    stop\_patience: & 0 \\
+    optimizer: & adam \\    
+    weight\_decay: & 0 \\
+    max\_abs\_grad\_norm: & 1 \\
+    grad\_accum\_steps: & 1 \\
+    greedy\_must\_match\_tf: & 0 \\
+    early\_stop\_perfect\_eval: & 0 \\
+    hidden: & 1024 \\
+    n\_encoder\_layers: & 1 \\
+    n\_decoder\_layers: & 3 \\
+    dropout: & 0 \\
+    filter: & 1024 \\
+    n\_heads: & 2 \\     
+\end{tabular}
+
+\pagebreak
+\iffalse
+\subsubsection{GRU}
+
+The GRU 1x exploratory random search operated on the following HP values:
+
+\begin{tabular}{ll}
+       weight\_decay: & [0, .001, .01] \\
+    lr: & [.0001, .00005] \\
+    lr\_warmup: & [0, 1000, 3000, 6000, 9000] \\
+    lr\_decay: & [none, linear, factor, noam] \\
+    lr\_decay\_factor: & [.9, .95, .99] \\
+    lr\_patience: & [0, 5000] \\
+    hidden: & [64, 96, 128, 256, 512, 768, 1024] \\
+    n\_encoder\_layers: & [1, 2, 3, 4, 5, 6] \\
+    n\_decoder\_layers: & [1, 2, 3, 4, 5, 6] \\
+    dropout: & [0, .05, .1, .15, .2] \\
+    bidir: & [0, 1] \\
+    use\_attn: & [0, 1] \\
+    rnn\_fold: & [min, max, mean, sum, hadamard] \\
+    attn\_inputs: & [0, 1] \\  
+\end{tabular}
+\vskip 0.15in
+
+The GRU 3x grid search operated on the following HP values:
+
+\begin{tabular}{ll}
+   hidden: [512, 768, 1024] \\
+    n\_encoder\_layers: [1, 5, 6] \\
+    n\_decoder\_layers: [1, 2, 3] \\
+\end{tabular}
+\vskip 0.15in
+
+The GRU 5x training on the target tasks was done with these final HP values:
+
+\begin{tabular}{ll}
+    n\_steps: & [30\_000] \\  
+    log\_every: & [200] \\
+    eval\_every: & [1000] \\
+    stop\_patience: & [0] \\
+    optimizer: & [adam] \\    
+    max\_abs\_grad\_norm: & [1] \\
+    grad\_accum\_steps: & [1] \\
+    greedy\_must\_match\_tf: & [0] \\
+    early\_stop\_perfect\_eval: & [0] \\
+    batch\_size\_per\_gpu: & [256] \\
+    max\_tokens\_per\_gpu: & 20\_000   \\
+    weight\_decay: & [0] \\
+    lr: & [.0001] \\
+    lr\_warmup: & [1000] \\
+    lr\_decay: & [noam] \\
+    lr\_decay\_factor: & [.9] \\
+    lr\_patience: & [5000] \\
+    hidden: & [1024] \\
+    n\_encoder\_layers: & [1] \\
+    n\_decoder\_layers: & [1] \\
+    dropout: & [.1] \\
+    bidir: & [0] \\
+    use\_attn: & [1] \\
+    rnn\_fold: & [sum] \\
+    attn\_inputs: & [0] \\  
+\end{tabular}
+\vskip 0.15in
+
+\pagebreak
+
+\fi
+\subsubsection{LSTM}
+
+The LSTM 1x exploratory random search operated on the following HP values:
+
+\begin{tabular}{ll}
+
+    
+    weight\_decay: & [0, .001, .01] \\
+    lr: & [.0001, .00005] \\
+    lr\_warmup: & [0, 1000, 3000, 6000, 9000] \\
+    lr\_decay: & [none, linear, factor, noam] \\
+    lr\_decay\_factor: & [.9, .95, .99] \\
+    lr\_patience: & [0, 5000] \\
+    hidden: & [64, 96, 128, 256, 512, 768, 1024] \\
+    n\_encoder\_layers: & [1, 2, 3, 4, 5, 6] \\
+    n\_decoder\_layers: & [1, 2, 3, 4, 5, 6] \\
+    dropout: & [0, .05, .1, .15, .2] \\
+    bidir: & [0, 1] \\
+    use\_attn: & [0, 1] \\
+    rnn\_fold: & [min, max, mean, sum, hadamard] \\
+    attn\_inputs: & [0, 1] \\  
+\end{tabular}
+\vskip 0.15in
+
+The LSTM 3x grid search operated on the following HP values:
+
+\begin{tabular}{ll}
+    lr\_decay: & [linear, noam] \\
+    hidden: & [512, 768, 1024] \\
+    n\_encoder\_layers: & [1, 6] \\
+    n\_decoder\_layers: & [1, 2, 3] \\
+    attn\_inputs: & [0, 1] \\  
+\end{tabular}
+\vskip 0.15in
+
+The LSTM 5x training on the target tasks was done with these final HP values:
+
+\begin{tabular}{ll}
+    n\_steps: & 30\_000 \\  
+    log\_every: & 200 \\
+    eval\_every: & 1000 \\
+    stop\_patience: & 0 \\
+    optimizer: & adam \\    
+    max\_abs\_grad\_norm: & 1 \\
+    grad\_accum\_steps: & 1 \\
+    greedy\_must\_match\_tf: & 0 \\
+    early\_stop\_perfect\_eval: & 0 \\
+    batch\_size\_per\_gpu: & 256 \\
+    max\_tokens\_per\_gpu: & 20\_000  \\  
+    weight\_decay: & 0 \\
+    lr: & .0001 \\
+    lr\_warmup: & 1000 \\
+    lr\_decay: & noam \\
+    lr\_decay\_factor: & .95 \\
+    lr\_patience: & 5000 \\
+    hidden: & 512 \\
+    n\_encoder\_layers: & 6 \\
+    n\_decoder\_layers: & 1 \\
+    dropout: & .1 \\
+    bidir: & 0 \\
+    use\_attn: & 1 \\
+    rnn\_fold: & max \\
+    attn\_inputs: & 1 \\  
+\end{tabular}
+
+\subsubsection{Tree2Tree}
+
+The Tree2Tree 1x exploratory random search operated on the following HP values: 
+
+\begin{tabular}{ll}
+lr: & [.01, .005, .001, .0005] \\
+lr\_decay\_factor: & [.8, .9, .95] \\
+max\_abs\_grad\_norm: & [1, 5] \\
+hidden: & [64, 128, 256, 512, 768] \\
+dropout: & [0, .1, .2, .4, .5, .6] \\
+lr\_decay: & [none, linear, factor, patience, noam] \\
+\end{tabular}
+
+\vskip 0.15in
+The Tree2Tree 3x grid search operated on the following HP values: 
+
+\begin{tabular}{ll}
+    dropout: & [0, .6] \\
+    hidden: & [512, 768] \\
+\end{tabular}
+\vskip 0.15in
+
+The Tree2Tree 5x training on the target tasks was done with these final HP values:
+
+
+\begin{tabular}{ll}
+    n\_steps: & [10\_000]  \\
+    stop\_patience: & [0] \\
+    early\_stop\_perfect\_eval: & [0] \\
+    lr: & [.0005] \\
+    lr\_decay: & [patience] \\
+    lr\_warmup: & [1000] \\
+    lr\_patience: & [500] \\
+    lr\_decay\_factor: & [.95] \\
+    batch\_size\_per\_gpu: & [256] \\
+    max\_tokens\_per\_gpu: &  null    \\
+    optimizer: & [adam]     \\
+    weight\_decay: & [0] \\
+    max\_abs\_grad\_norm: & [1] \\
+    grad\_accum\_steps: & [1] \\
+    n\_encoder\_layers: & [1] \\
+    n\_decoder\_layers: & [1] \\
+    dropout: & [0] \\
+    hidden: & [512] \\
+\end{tabular}
+
+\pagebreak
+
+\subsubsection{TreeTransformer}
+
+The TreeTransformer 1x exploratory random search operated on the following HP values: 
+
+\begin{tabular}{ll}
+    dropout\_rate: & [0, .05, .1, .2] \\
+    batch\_size: & [64, 128, 256] \\
+    learning\_rate: & [.0001, .0005, .001, .00001] \\
+    optimizer: & [adam, sgd, momentum, adagrad, adadelta, rmsprop] \\
+    max\_gradient\_norm: & [0.0, .05, .1] \\
+    momentum: & [0.0, .1, .5, .9] \\
+    d\_model: & [128, 256] \\
+    d\_ff: & [128, 256, 512, 1024] \\
+    encoder\_depth: & [1, 2, 3, 4] \\
+    decoder\_depth: & [2, 4, 6, 8] \\
+    
+\end{tabular}
+
+\vskip 0.15in
+The TreeTransformer 3x grid search operated on the following HP values: 
+
+\begin{tabular}{ll}
+    optimizer: & [adagrad, adadelta] \\
+    max\_gradient\_norm: & [.05, .1] \\
+    momentum: & [0.0, .5] \\
+    d\_model: & [256] \\
+    d\_ff: & [256] \\
+    encoder\_depth: & [1, 2] \\
+    decoder\_depth: & [2, 4] \\
+\end{tabular}
+\vskip 0.15in
+
+The TreeTransformer 5x training on the target tasks was done with these final HP values:
+
+
+\begin{tabular}{ll}
+    train\_batches: & [30\_000]   \\
+    max\_eval\_steps: & [2000] \\
+
+    dropout\_rate: & [0] \\
+    batch\_size: & [256] \\
+    learning\_rate: & [.0001] \\
+    optimizer: & [adagrad] \\
+    max\_gradient\_norm: & [.05] \\
+    momentum: & [.5] \\
+    num\_heads: & [2] \\
+    d\_model: & [256] \\
+    d\_ff: & [256] \\
+    encoder\_depth: & [1] \\
+    decoder\_depth: & [2] \\
+\end{tabular}
+
+\vskip 0.15in
+
+\section{Basic Sentence Transforms}
+
+\subsection{Dataset Construction} \label{sec:dataset-construction}
+The Basic Sentence Transforms vocabulary size and tree depth are available below. The lexical splits are constructed by using 1 set of adjectives for the Train, Dev, Test IID, and OOD Structural splits, and a disjoint set for the OOD Lexical split. The structural splits are constructed by using 0-2 nested adjectives distributed randomly to the two noun phrases for train, dev, and OOD Lexical splits, and 3-4 nested adjectives to the two noun phrases for the OOD Structural split. Adjective phrases are nested within each other within a noun phrase, so each additional adjective increases the overall tree depth by 1.
+
+\textbf{Vocabulary Size}
+\begin{table}[H]
+\begin{center}
+\begin{sc}
+\begin{tabular}{lccc}
+\toprule
+Dataset & Train/Dev/Test & Test OOD Lexical & Test OOD Structural \\
+\midrule
+CAR\_CDR\_SEQ & 142 & 153 & 142 \\
+Active$\leftrightarrow$Logical & 101 & 112 & 101 \\
+Passive$\leftrightarrow$Logical & 107 & 118 & 107 \\
+Active \& Passive$\rightarrow$Logical & 105 & 116 & 105 \\
+\bottomrule
+\end{tabular}
+\end{sc}
+\end{center}
+\vskip -0.1in
+\end{table}
+
+\textbf{Tree Depth}
+\begin{table}[H]
+\begin{center}
+\begin{sc}
+\begin{tabular}{lccc}
+\toprule
+Dataset & Train/Dev/Test & Test OOD Lexical & Test OOD Structural \\
+\midrule
+CAR\_CDR\_SEQ & 10 & 10 & 12 \\
+Active$\leftrightarrow$Logical & 8 & 8 & 10 \\
+Passive$\leftrightarrow$Logical & 10 & 10 & 12 \\
+Active \& Passive$\rightarrow$Logical & 10 & 10 & 12 \\
+\bottomrule
+\end{tabular}
+\end{sc}
+\end{center}
+\vskip -0.1in
+\end{table}
+
+
+\subsection{Dataset Samples} \label{sec:dataset-samples}
+This appendix contains samples of the 4 tasks that we used from the Basic Sentence Transforms Dataset.
+
+\subsubsection{\textbf{CAR-CDR-SEQ} Samples}
+
+\underline{Source Tree:}
+
+\hspace{.15in} ( CDDDDR ( NP ( DET the ) ( AP ( N goat ) ) ) ( VP ( AUXPS was ) ( VPPS ( V bought ) ( PPPS ( PPS by ) ( NP ( DET the ) ( AP ( ADJ round ) ( AP ( N rose ) ) ) ) ) ) ) )	
+
+\begin{figure}[H]
+\vskip 0.2in
+\begin{center}
+\centerline{\includegraphics[width=.4\columnwidth]{images/dtm/car_cdr_seq_input.pdf}}
+\end{center}
+\vskip -0.2in
+\end{figure}
+
+\underline{Target (Gold) Tree:}
+
+\hspace{.15in}( NP ( DET ( the ) ) ( AP ( ADJ ( round ) ) ( AP ( N ( rose ) ) ) ) )
+
+\begin{figure}[H]
+\vskip 0.2in
+\begin{center}
+\centerline{\includegraphics[width=.2\columnwidth]{images/dtm/car_cdr_seq_output.pdf}}
+\end{center}
+\vskip -0.2in
+\end{figure}
+
+\subsubsection{\textbf{Active$\leftrightarrow$Logical} Samples}
+
+\underline{Source Tree:}
+
+\hspace{.15in} ( S ( NP ( DET some ) ( AP ( N crocodile ) ) ) ( VP ( V washed ) ( NP ( DET our ) ( AP ( ADJ happy ) ( AP ( ADJ thin ) ( AP ( N donkey ) ) ) ) ) ) )	
+
+\begin{figure}[H]
+\vskip 0.2in
+\begin{center}
+\centerline{\includegraphics[width=.4\columnwidth]{images/dtm/active_logical_input.pdf}}
+\end{center}
+\vskip -0.2in
+\end{figure}
+
+\underline{Target (Gold) Tree:}
+
+\hspace{.15in} ( LF ( V washed ) ( ARGS ( NP ( DET some ) ( AP ( N crocodile ) ) ) ( NP ( DET our ) ( AP ( ADJ happy ) ( AP ( ADJ thin ) ( AP ( N donkey ) ) ) ) ) ) )	
+
+\begin{figure}[H]
+\vskip 0.2in
+\begin{center}
+\centerline{\includegraphics[width=.4\columnwidth]{images/dtm/active_logical_output.pdf}}
+\end{center}
+\vskip -0.2in
+\end{figure}
+
+\subsubsection{\textbf{Passive$\leftrightarrow$Logical} Samples}
+
+\underline{Source Tree:}
+\hspace{.15in} ( S ( NP ( DET his ) ( AP ( N tree ) ) ) ( VP ( AUXPS was ) ( VPPS ( V touched ) ( PPPS ( PPS by ) ( NP ( DET one ) ( AP ( ADJ polka-dotted ) ( AP ( N crocodile ) ) ) ) ) ) ) )	
+
+\begin{figure}[H]
+\vskip 0.2in
+\begin{center}
+\centerline{\includegraphics[width=.4\columnwidth]{images/dtm/passive_logical_input.pdf}}
+\end{center}
+\vskip -0.2in
+\end{figure}
+
+\underline{Target (Gold) Tree:}
+\hspace{.15in} ( LF ( V touched ) ( ARGS ( NP ( DET one ) ( AP ( ADJ polka-dotted ) ( AP ( N crocodile ) ) ) ) ( NP ( DET his ) ( AP ( N tree ) ) ) ) )
+
+\begin{figure}[H]
+\vskip 0.2in
+\begin{center}
+\centerline{\includegraphics[width=.4\columnwidth]{images/dtm/passive_logical_output.pdf}}
+\end{center}
+\vskip -0.2in
+\end{figure}
+
+\subsubsection{\textbf{Active \& Passive$\rightarrow$Logical} Samples}
+
+\underline{Source Tree:}
+\hspace{.15in} ( S ( NP ( DET a ) ( AP ( N fox ) ) ) ( VP ( AUXPS was ) ( VPPS ( V kissed ) ( PPPS ( PPS by ) ( NP ( DET my ) ( AP ( ADJ blue ) ( AP ( N giraffe ) ) ) ) ) ) ) )
+
+\begin{figure}[H]
+\vskip 0.2in
+\begin{center}
+\centerline{\includegraphics[width=.4\columnwidth]{images/dtm/actpass_input.pdf}}
+\end{center}
+\vskip -0.2in
+\end{figure}
+
+\underline{Target (Gold) Tree:}
+\hspace{.15in} ( LF ( V kissed ) ( ARGS ( NP ( DET my ) ( AP ( ADJ blue ) ( AP ( N giraffe ) ) ) ) ( NP ( DET a ) ( AP ( N fox ) ) ) ) )
+
+\begin{figure}[H]
+\vskip 0.2in
+\begin{center}
+\centerline{\includegraphics[width=.4\columnwidth]{images/dtm/actpass_output.pdf}}
+\end{center}
+\vskip -0.2in
+\end{figure}
