@@ -8,9 +8,8 @@
 \end{singlespace} 
 
 %% remove the following and add your chapter text here
-\begin{abstract}
+\section{Abstract}
     Transformers have achieved remarkable success in Natural Language Processing but struggle with state tracking and algorithmic reasoning tasks, such as modeling Regular Languages. In contrast, Recurrent Neural Networks (RNNs) exhibit perfect generalization modeling Regular Languages. To bridge this gap, we explore Recurrent Transformer variants that incorporate chunking, balancing the parallelizability of Transformers with the sequential processing of RNNs. We identify layer-recurrence as the key type of recurrence that allows Recurrent Transformers to succeed in modeling Regular Languages. Further analysis indicates a rapid decline in generalization performance as chunk size increases beyond two, though with an exponential decrease in training time. This study underscores the critical role of layer-recurrence and chunk size in Recurrent Transformers, highlighting the trade-off between generalization capabilities and parallelism. Code available at \url{https://github.com/IBM/recurrent-chunked-models-regular-languages}.%While small chunk sizes improve the ability of Recurrent Transformers to model Regular Languages and, by extension, more complex language structures, the decrease in training speed makes it costly to train models with small chunk sizes on large datasets. Our results suggest that optimizing chunk size, enhancing the speed of Recurrent Transformers, or adding recurrence during fine-tuning are important steps for improving training Recurrent Transformers at scale. 
-    \end{abstract}
     
     \section{Introduction}
     
