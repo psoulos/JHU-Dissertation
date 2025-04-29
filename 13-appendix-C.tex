@@ -1,6 +1,6 @@
 \chapter{Appendix for Compositional Generalization Across Distributional Shifts with Sparse Tree Operations} \label{chap:appendix-c}
 
-\subsection{\fullrepname as Tensor Product Representations} \label{sec:sdtm-appendix-sparse-tprs}
+\section{\fullrepname as Tensor Product Representations} \label{sec:sdtm-appendix-sparse-tprs}
 This section shows that \fullrepname is the same as a TPR with the constraint that the role basis is the standard basis. TPRs define structural positions as role vectors $r_i \in \mathbb{R}^{d_r}$, and the content that fills these positions is defined by filler vectors $f_i \in \mathbb{R}^{d_f}$. For a particular role and filler pair, the filler $f_i$ is \textit{bound} to the role $r_i$ using the tensor/outer product: $f_i \otimes r_i \in \mathbb{R}^{d_f \times d_r}$. The representation of an entire structure is the sum over all $N$ individual filler-role pairs: $T = \sum_{i=1}^N f_i \otimes r_i  \in \mathbb{R}^{d_f \times d_r}$. As shown in the previous two equations, the dimensionality of a single filler-role pair is equal to the dimensionality of an entire structure: both have dimensionality $\mathbb{R}^{d_f \times d_r}$. This means that a tree with only a filled root node takes up the same memory as a dense tree with every node filled. An important requirement for TPRs is that the role vectors must be linearly independent; this ensures that a filler can be \textit{unbound} from a role without introducing noise using the inner product: $f_j = Tr^+_j$, where $\{r^+_i\}_i$ is the basis dual to $\{r_i\}_i$. Previous work typically used randomly initialized and frozen orthonormal vectors to define the role basis. By defining our role vectors in a sparse manner as opposed to random initialization, we can greatly reduce the memory used by TPRs.
 
 Classic symbolic data structures grow in memory linearly with the number of filled positions.  It is possible to replicate this behavior with TPRs by defining the role vectors to be the standard one-hot basis, which is orthonormal by definition. The $i$-th element of role vector $r_i$ is 1, and the other elements are 0. When a filler and role vector are both dense, the resulting bound vector is also dense. When the role vector is one-hot, the resulting bound vector is 0 everywhere except for column $i$ which corresponds to the value 1 in $r_i$. By using a sparse tensor representation that only keeps track of dimensions that are not equal to 0, we can reduce the memory usage of TPRs to linear growth that scales with the number of filled positions, like a classical symbolic data structure. This however forgoes a motivating desideratum for the design of TPRs, that roles (and not just fillers) have similarity relations that support generalization across structural positions.
@@ -11,7 +11,7 @@ Since we are not performing an outer product, instead of storing sparse role vec
 
 We can compare the memory requirements of the Sparse Coordinate Tree encoding used in the \sdtm to the memory requirements of the full TPRs used in the original \dtm of \citet{Soulos_2023_DifferentiableTreeOperations}. A TPR uses the same amount of memory regardless of the number of filled nodes. As with all sparse tensor formats, the memory savings arise when there are many zeros. In a dense tree where every node is occupied, the classical dense TPR approach is actually more efficient: the \abvrepname's value list has the same total dimension as the classical TPR, but, in addition, the \abvrepname encoding includes the list of filled-node addresses.
 
-\subsection{Agent Figure}
+\section{Agent Figure}
 See Figure \ref{fig:agent}.
 \begin{figure}
     \centering
@@ -20,7 +20,7 @@ See Figure \ref{fig:agent}.
     \label{fig:agent}
 \end{figure}
 
-\subsection{Lexical Regularization Ablation} \label{sec:sdtm-lex-reg-ablation}
+\section{Lexical Regularization Ablation} \label{sec:sdtm-lex-reg-ablation}
 To see the importance of adding noise to our input embeddings as defined in Section \ref{sec:sdtm-lex-reg}, we show the performance of \sdtm with and without this regularization in Table \ref{tab:lex-reg-ablation}. 
 %The results show that without regularization, 
 
@@ -39,13 +39,13 @@ To see the importance of adding noise to our input embeddings as defined in Sect
 
 
 
-\subsection{Dataset Preprocessing} \label{sec:sdtm-data-preprocessing}
+\section{Dataset Preprocessing} \label{sec:sdtm-data-preprocessing}
 We preprocessed GeoQuery according to the steps from \citet{shaw-etal-2021-compositional}. FOR2LAM and GeoQuery both contain non-binary trees, which we convert to binary form using Chomsky normal form. When a new node is inserted to make a branch binary, we use the token <NT>. For output sequences with length one embedded according to left-aligned uniform-depth, we make the single token the left child of a new <NT> root node.
 
-\subsection{0-shot Lexical Test Generation}
+\section{0-shot Lexical Test Generation}
 For both FOR2LAM and SCAN, we introduce 0-shot lexical tests. For FOR2LAM, we do this by replacing every occurrence of `x' in the test set with a new token `z'. For the SCAN 0-shot set, we start with the 1-shot lexical test set and remove the sample containing the 1-shot word `jump'. We alter the output vocabulary to use the same tokens as the input vocabulary, since it is impossible for a word level model to translate between an input and output word without any exposure to that word.
 
-\subsection{DTM Training Details} \label{sec:sdtm-dtm-training}
+\section{DTM Training Details} \label{sec:sdtm-dtm-training}
 When applicable, we adopt the hyperparameters from \citet{Soulos_2023_DifferentiableTreeOperations}. Below we list the newly introduced hyperparameters and changes we made to existing parameters.
 
 \citet{Soulos_2023_DifferentiableTreeOperations} set the dimensionality of the embeddings to be equal to the size of vocabulary. This works for the datasets with small vocabulary examined in the original paper. We keep this setting for Active$\leftrightarrow$Logical, but set the embedding dimension to 64 for FOR2LAM, and 128 for GeoQuery and SCAN. We also changed the loss function from mean-squared error to cross entropy.
@@ -60,7 +60,7 @@ We noticed that randomly initializing and freezing our embedding vectors was ess
 
 For the results, we reported the best run of 5 random seeds. Like \dtm, \sdtm suffers from high variance. Some runs get stuck in local optima and fail to achieve moderate performance on the training set, which leads to poor performance on the test sets. This is a known issue with models that use superposition data structures, and reporting the best run over a number of random seeds has been previously used \citep{yogatama2018memory, dusell2024stack}.
 
-\subsection{\dtm Summary Statistics} \label{sec:sdtm-statistics}
+\section{\dtm Summary Statistics} \label{sec:sdtm-statistics}
 Mean and standard deviation accuracies are shown in Tables \ref{tab:activelogical-stats}, \ref{tab:for2lam-geoquery-stats}, and \ref{tab:scan-stats}.
 
 \begin{table}
@@ -113,19 +113,19 @@ Model & IID & 0-shot lexical & IID & Length & Template & TMCD \\
 \end{tabular}
 \end{table}
 
-\subsection{Baseline Training Details} \label{sec:sdtm-baseline-training}
+\section{Baseline Training Details} \label{sec:sdtm-baseline-training}
 \textbf{NQG:} Active$\leftrightarrow$Logical rule induction used the following hyperparameters: sample size=training set size, terminal code length=8, allow repeated nts=True. The terminal code length setting was obtained via grid search over the values 1, 8, 32. For the actual training of the model we follow the hyperparameters utilised by \cite{Sun_2023_ReplicationStudyCompositional, shaw-etal-2021-compositional}. FOR2LAM used the same hyperparameters with the exception of sample size which had to be set to 1000 as additional increases became computationally intractable. Even under these settings rule induction took 42 hours on a machine with 64gb of ram. Writing the training set would take an additional week of processing time, which we considered computationally too expensive.% at time of submission. However, if required by the reviewers we can include these results for the camera ready version
 
 \textbf{Transformer:} We followed the same hyperparameters obtained via grid search from \cite{Soulos_2023_DifferentiableTreeOperations}. Specifically these are: 30,000 steps of which 1000 were warmup and linear learning rate decay; batch size 256; one encoder layer and three decoder layer each with a hidden dimension of 1024 and two attention heads; the optimizer was Adam. 
 
 \textbf{RU-Transformer:} We followed the hyperparameters reported by \cite{csordas-etal-2021-devil}. These are: 128 dimension hidden size with 256 feedforward; 8 attention heads; 3 layers; batch size 256; trained using Adam with learning rate $10^{-3}$. 
 
-\subsection{Compute resources} \label{sec:sdtm-compute-resources}
+\section{Compute resources} \label{sec:sdtm-compute-resources}
 All reported \sdtm runs could be processed on NVIDIA 16gb V100 GPUs. Depending on availability, we ran some seeds on 80gb H100 GPUs, but this is not necessary. The Transformer baselines were also run on NVIDIA 16gb V100 GPUs. NQG used NVIDIA 40gb A100 GPUs. The GPUs we used were hosted on an internal cluster. 
 
 Designing our architecture involved many preliminary experiments that are not reported in the paper.
 
-\subsection{Dataset Statistics and Samples} \label{sec:sdtm-data-stats-samples}
+\section{Dataset Statistics and Samples} \label{sec:sdtm-data-stats-samples}
 Example input and output pairs are shown for Active$\leftrightarrow$Logical in Figure \ref{fig:active-logical-sample}  FOR2LAM in Figure \ref{fig:for2lam-sample}, GeoQuery in Figure \ref{fig:geoquery-sample}, and SCAN in Figure \ref{fig:root-and-laud}. The memory usage of \dtm grows exponentially with tree depth, so we present the max depth of the datasets here:
 \begin{itemize}
     \item Active$\leftrightarrow$Logical: max tree depth 10
@@ -156,7 +156,7 @@ Example input and output pairs are shown for Active$\leftrightarrow$Logical in F
     \label{fig:geoquery-sample}
 \end{figure}
 
-\subsection{Licenses} \label{sec:sdtm-licenses}
+\section{Licenses} \label{sec:sdtm-licenses}
 \textbf{Baselines:}
 \begin{itemize}
     \item DTM: Permissive 2.0
