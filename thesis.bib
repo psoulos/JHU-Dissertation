@@ -1482,3 +1482,932 @@ abstract = {Neurons are pretty complicated cells. They display an endless variet
   volume={31},
   year={2018}
 }
+
+@inproceedings{
+soulos2024compositional,
+title={Compositional Generalization Across Distributional Shifts with Sparse Tree Operations},
+author={Paul Soulos and Henry Conklin and Mattia Opper and Paul Smolensky and Jianfeng Gao and Roland Fernandez},
+booktitle={The Thirty-eighth Annual Conference on Neural Information Processing Systems},
+year={2024},
+url={https://openreview.net/forum?id=fOQunr2E0T}
+}
+
+@article{Smolensky1990TensorPV,
+  title={Tensor Product Variable Binding and the Representation of Symbolic Structures in Connectionist Systems},
+  author={Paul Smolensky},
+  journal={Artif. Intell.},
+  year={1990},
+  volume={46},
+  pages={159-216}
+}
+
+@misc{li_slog_2023,
+	title = {{SLOG}: {A} {Structural} {Generalization} {Benchmark} for {Semantic} {Parsing}},
+	shorttitle = {{SLOG}},
+	url = {http://arxiv.org/abs/2310.15040},
+	abstract = {The goal of compositional generalization benchmarks is to evaluate how well models generalize to new complex linguistic expressions. Existing benchmarks often focus on lexical generalization, the interpretation of novel lexical items in syntactic structures familiar from training; structural generalization tasks, where a model needs to interpret syntactic structures that are themselves unfamiliar from training, are often underrepresented, resulting in overly optimistic perceptions of how well models can generalize. We introduce SLOG, a semantic parsing dataset that extends COGS (Kim and Linzen, 2020) with 17 structural generalization cases. In our experiments, the generalization accuracy of Transformer models, including pretrained ones, only reaches 40.6\%, while a structure-aware parser only achieves 70.8\%. These results are far from the near-perfect accuracy existing models achieve on COGS, demonstrating the role of SLOG in foregrounding the large discrepancy between models' lexical and structural generalization capacities.},
+	urldate = {2024-01-28},
+	publisher = {arXiv},
+	author = {Li, Bingzhi and Donatelli, Lucia and Koller, Alexander and Linzen, Tal and Yao, Yuekun and Kim, Najoung},
+	month = oct,
+	year = {2023},
+	note = {arXiv:2310.15040 [cs]},
+	keywords = {Computer Science - Computation and Language},
+}
+
+@article{Winters_Marra_Manhaeve_Raedt_2022, title={DeepStochLog: Neural Stochastic Logic Programming}, volume={36}, url={https://ojs.aaai.org/index.php/AAAI/article/view/21248}, DOI={10.1609/aaai.v36i9.21248}, abstractNote={Recent advances in neural-symbolic learning, such as DeepProbLog, extend probabilistic logic programs with neural predicates. Like graphical models, these probabilistic logic programs define a probability distribution over possible worlds, for which inference is computationally hard. We propose DeepStochLog, an alternative neural-symbolic framework based on stochastic definite clause grammars, a kind of stochastic logic program. More specifically, we introduce neural grammar rules into stochastic definite clause grammars to create a framework that can be trained end-to-end. We show that inference and learning in neural stochastic logic programming scale much better than for neural probabilistic logic programs. Furthermore, the experimental evaluation shows that DeepStochLog achieves state-of-the-art results on challenging neural-symbolic learning tasks.}, number={9}, journal={Proceedings of the AAAI Conference on Artificial Intelligence}, author={Winters, Thomas and Marra, Giuseppe and Manhaeve, Robin and Raedt, Luc De}, year={2022}, month={Jun.}, pages={10090-10100} }
+
+@inproceedings{rocktaschel-riedel-2016-learning,
+    title = "Learning Knowledge Base Inference with Neural Theorem Provers",
+    author = {Rockt{\"a}schel, Tim  and
+      Riedel, Sebastian},
+    editor = "Pujara, Jay  and
+      Rocktaschel, Tim  and
+      Chen, Danqi  and
+      Singh, Sameer",
+    booktitle = "Proceedings of the 5th Workshop on Automated Knowledge Base Construction",
+    month = jun,
+    year = "2016",
+    address = "San Diego, CA",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/W16-1309",
+    doi = "10.18653/v1/W16-1309",
+    pages = "45--50",
+}
+
+@article{Shindo_Nishino_Yamamoto_2021, title={Differentiable Inductive Logic Programming for Structured Examples}, volume={35}, url={https://ojs.aaai.org/index.php/AAAI/article/view/16637}, DOI={10.1609/aaai.v35i6.16637}, abstractNote={The differentiable implementation of logic yields a seamless combination of symbolic reasoning and deep neural networks. Recent research, which has developed a differentiable framework to learn logic programs from examples, can even acquire reasonable solutions from noisy datasets. However, this framework severely limits expressions for solutions, e.g., no function symbols are allowed, and the shapes of clauses are fixed. As a result, the framework cannot deal with structured examples. Therefore we propose a new framework to learn logic programs from noisy and structured examples, including the following contributions. First, we propose an adaptive clause search method by looking through structured space, which is defined by the generality of the clauses, to yield an efficient search space for differentiable solvers. Second, we propose for ground atoms an enumeration algorithm, which determines a necessary and sufficient set of ground atoms to perform differentiable inference functions. Finally, we propose a new method to compose logic programs softly, enabling the system to deal with complex programs consisting of several clauses. Our experiments show that our new framework can learn logic programs from noisy and structured examples, such as sequences or trees. Our framework can be scaled to deal with complex programs that consist of several clauses with function symbols.}, number={6}, journal={Proceedings of the AAAI Conference on Artificial Intelligence}, author={Shindo, Hikaru and Nishino, Masaaki and Yamamoto, Akihiro}, year={2021}, month={May}, pages={5034-5041} }
+
+@article{Muggleton_1991_InductiveLogicProgramming,
+	title = {Inductive logic programming},
+	volume = {8},
+	issn = {1882-7055},
+	url = {https://doi.org/10.1007/BF03037089},
+	doi = {10.1007/BF03037089},
+	abstract = {A new research area, Inductive Logic Programming, is presently emerging. While inheriting various positive characteristics of the parent subjects of Logic Programming and Machine Learning, it is hoped that the new area will overcome many of the limitations of its forebears. The background to present developments within this area is discussed and various goals and aspirations for the increasing body of researchers are identified. Inductive Logic Programming needs to be based on sound principles from both Logic and Statistics. On the side of statistical justification of hypotheses we discuss the possible relationship between Algorithmic Complexity theory and Probably-Approximately-Correct (PAC) Learning. In terms of logic we provide a unifying framework for Muggleton and Buntine’s Inverse Resolution (IR) and Plotkin’s Relative Least General Generalisation (RLGG) by rederiving RLGG in terms of IR. This leads to a discussion of the feasibility of extending the RLGG framework to allow for the invention of new predicates, previously discussed only within the context of IR.},
+	number = {4},
+	journal = {New Generation Computing},
+	author = {Muggleton, Stephen},
+	month = feb,
+	year = {1991},
+	pages = {295--318},
+}
+
+
+@inproceedings{NEURIPS2023_bf215fa7,
+ author = {Maene, Jaron and De Raedt, Luc},
+ booktitle = {Advances in Neural Information Processing Systems},
+ editor = {A. Oh and T. Naumann and A. Globerson and K. Saenko and M. Hardt and S. Levine},
+ pages = {60804--60820},
+ publisher = {Curran Associates, Inc.},
+ title = {Soft-Unification in Deep Probabilistic Logic},
+ url = {https://proceedings.neurips.cc/paper_files/paper/2023/file/bf215fa7fe70a38c5e967e59c44a99d0-Paper-Conference.pdf},
+ volume = {36},
+ year = {2023}
+}
+
+
+@InProceedings{pmlr-v216-de-smet23a,
+  title = 	 {Neural probabilistic logic programming in discrete-continuous domains},
+  author =       {De Smet, Lennert and Zuidberg Dos Martires, Pedro and Manhaeve, Robin and Marra, Giuseppe and Kimmig, Angelika and De Readt, Luc},
+  booktitle = 	 {Proceedings of the Thirty-Ninth Conference on Uncertainty in Artificial Intelligence},
+  pages = 	 {529--538},
+  year = 	 {2023},
+  editor = 	 {Evans, Robin J. and Shpitser, Ilya},
+  volume = 	 {216},
+  series = 	 {Proceedings of Machine Learning Research},
+  month = 	 {31 Jul--04 Aug},
+  publisher =    {PMLR},
+  pdf = 	 {https://proceedings.mlr.press/v216/de-smet23a/de-smet23a.pdf},
+  url = 	 {https://proceedings.mlr.press/v216/de-smet23a.html},
+  abstract = 	 {Neural-symbolic AI (NeSy) allows neural networks to exploit symbolic background knowledge in the form of logic. It has been shown to aid learning in the limited data regime and to facilitate inference on out-of-distribution data. Probabilistic NeSy focuses on integrating neural networks with both logic and probability theory, which additionally allows learning under uncertainty. A major limitation of current probabilistic NeSy systems, such as DeepProbLog, is their restriction to finite probability distributions, i.e., discrete random variables. In contrast, deep probabilistic programming (DPP) excels in modelling and optimising continuous probability distributions. Hence, we introduce DeepSeaProbLog, a neural probabilistic logic programming language that incorporates DPP techniques into NeSy. Doing so results in the support of inference and learning of both discrete and continuous probability distributions under logical constraints. Our main contributions are 1) the semantics of DeepSeaProbLog and its corresponding inference algorithm, 2) a proven asymptotically unbiased learning algorithm, and 3) a series of experiments that illustrate the versatility of our approach.}
+}
+
+
+@inproceedings{ijcai2020p243,
+  title     = {NeurASP: Embracing Neural Networks into Answer Set Programming},
+  author    = {Yang, Zhun and Ishay, Adam and Lee, Joohyung},
+  booktitle = {Proceedings of the Twenty-Ninth International Joint Conference on
+               Artificial Intelligence, {IJCAI-20}},
+  publisher = {International Joint Conferences on Artificial Intelligence Organization},
+  editor    = {Christian Bessiere},
+  pages     = {1755--1762},
+  year      = {2020},
+  month     = {7},
+  note      = {Main track},
+  doi       = {10.24963/ijcai.2020/243},
+  url       = {https://doi.org/10.24963/ijcai.2020/243},
+}
+
+
+@article{BADREDDINE2022103649,
+title = {Logic Tensor Networks},
+journal = {Artificial Intelligence},
+volume = {303},
+pages = {103649},
+year = {2022},
+issn = {0004-3702},
+doi = {https://doi.org/10.1016/j.artint.2021.103649},
+url = {https://www.sciencedirect.com/science/article/pii/S0004370221002009},
+author = {Samy Badreddine and Artur {d'Avila Garcez} and Luciano Serafini and Michael Spranger},
+keywords = {Neurosymbolic AI, Deep learning and reasoning, Many-valued logics},
+abstract = {Attempts at combining logic and neural networks into neurosymbolic approaches have been on the increase in recent years. In a neurosymbolic system, symbolic knowledge assists deep learning, which typically uses a sub-symbolic distributed representation, to learn and reason at a higher level of abstraction. We present Logic Tensor Networks (LTN), a neurosymbolic framework that supports querying, learning and reasoning with both rich data and abstract knowledge about the world. LTN introduces a fully differentiable logical language, called Real Logic, whereby the elements of a first-order logic signature are grounded onto data using neural computational graphs and first-order fuzzy logic semantics. We show that LTN provides a uniform language to represent and compute efficiently many of the most important AI tasks such as multi-label classification, relational learning, data clustering, semi-supervised learning, regression, embedding learning and query answering. We implement and illustrate each of the above tasks with several simple explanatory examples using TensorFlow 2. The results indicate that LTN can be a general and powerful framework for neurosymbolic AI.}
+}
+
+@article{devlin_bert_2019,
+	title = {{BERT}: {Pre}-training of {Deep} {Bidirectional} {Transformers} for {Language} {Understanding}},
+	shorttitle = {{BERT}},
+	url = {http://arxiv.org/abs/1810.04805},
+	abstract = {We introduce a new language representation model called BERT, which stands for Bidirectional Encoder Representations from Transformers. Unlike recent language representation models (Peters et al., 2018a; Radford et al., 2018), BERT is designed to pretrain deep bidirectional representations from unlabeled text by jointly conditioning on both left and right context in all layers. As a result, the pre-trained BERT model can be ﬁnetuned with just one additional output layer to create state-of-the-art models for a wide range of tasks, such as question answering and language inference, without substantial taskspeciﬁc architecture modiﬁcations.},
+	language = {en},
+	urldate = {2020-06-19},
+	journal = {arXiv:1810.04805 [cs]},
+	author = {Devlin, Jacob and Chang, Ming-Wei and Lee, Kenton and Toutanova, Kristina},
+	month = may,
+	year = {2019},
+	note = {arXiv: 1810.04805},
+	keywords = {Computer Science - Computation and Language},
+}
+
+@article{partee1995lexical,
+  title={Lexical semantics and compositionality},
+  author={Partee, Barbara and others},
+  journal={An invitation to cognitive science: Language},
+  volume={1},
+  pages={311--360},
+  year={1995},
+  publisher={MIT Press Cambridge, MA:}
+}
+@article{steedman1987combinatory,
+  title={Combinatory grammars and parasitic gaps},
+  author={Steedman, Mark},
+  journal={Natural Language \& Linguistic Theory},
+  volume={5},
+  number={3},
+  pages={403--439},
+  year={1987},
+  publisher={Springer}
+}
+@inproceedings{klein2002generative,
+  title={A generative constituent-context model for improved grammar induction},
+  author={Klein, Dan and Manning, Christopher D},
+  booktitle={Proceedings of the 40th Annual Meeting of the Association for Computational Linguistics},
+  pages={128--135},
+  year={2002}
+}
+@article{furrer2020compositional,
+  title={Compositional generalization in semantic parsing: Pre-training vs. specialized architectures},
+  author={Furrer, Daniel and van Zee, Marc and Scales, Nathan and Sch{\"a}rli, Nathanael},
+  journal={arXiv preprint arXiv:2007.08970},
+  year={2020}
+}
+@article{kim2019compound,
+  title={Compound probabilistic context-free grammars for grammar induction},
+  author={Kim, Yoon and Dyer, Chris and Rush, Alexander M},
+  journal={arXiv preprint arXiv:1906.10225},
+  year={2019}
+}
+
+@article{devlin_compositional_2019,
+	title = {Compositional {Generalization} in {Semantic} {Parsing}: {Pre}-training vs. {Specialized} {Architectures}},
+	doi = {10.18653/v1/N19-1423},
+	author = {Devlin, Jacob and Chang, Ming-Wei and Lee, Kenton and Toutanova, Kristina},
+	year = {2019},
+	pages = {4171--4186},
+}
+@article{mccarthy1960recursive,
+  title={Recursive functions of symbolic expressions and their computation by machine, part I},
+  author={McCarthy, John},
+  journal={Communications of the ACM},
+  volume={3},
+  number={4},
+  pages={184--195},
+  year={1960},
+  publisher={ACM New York, NY, USA}
+}
+
+@inproceedings{andreas_good-enough_2020,
+	address = {Online},
+	title = {Good-{Enough} {Compositional} {Data} {Augmentation}},
+	url = {https://www.aclweb.org/anthology/2020.acl-main.676},
+	doi = {10.18653/v1/2020.acl-main.676},
+	abstract = {We propose a simple data augmentation protocol aimed at providing a compositional inductive bias in conditional and unconditional sequence models. Under this protocol, synthetic training examples are constructed by taking real training examples and replacing (possibly discontinuous) fragments with other fragments that appear in at least one similar environment. The protocol is model-agnostic and useful for a variety of tasks. Applied to neural sequence-to-sequence models, it reduces error rate by as much as 87\% on diagnostic tasks from the SCAN dataset and 16\% on a semantic parsing task. Applied to n-gram language models, it reduces perplexity by roughly 1\% on small corpora in several languages.},
+	language = {en},
+	urldate = {2021-01-30},
+	booktitle = {Proceedings of the 58th {Annual} {Meeting} of the {Association} for {Computational} {Linguistics}},
+	publisher = {Association for Computational Linguistics},
+	author = {Andreas, Jacob},
+	year = {2020},
+	keywords = {\_tablet},
+	pages = {7556--7566},
+}
+
+@inproceedings{sakai1961syntax,
+  title={Syntax in universal translation},
+  author={Sakai, Itiroo},
+  booktitle={Proceedings of the International Conference on Machine Translation and Applied Language Analysis},
+  year={1961}
+}
+
+@article{lopez2008statistical,
+  title={Statistical machine translation},
+  author={Lopez, Adam},
+  journal={ACM Computing Surveys (CSUR)},
+  volume={40},
+  number={3},
+  pages={1--49},
+  year={2008},
+  publisher={ACM New York, NY, USA}
+}
+
+@article{guo_sequence-level_2020,
+	title = {Sequence-{Level} {Mixed} {Sample} {Data} {Augmentation}},
+	url = {http://arxiv.org/abs/2011.09039},
+	abstract = {Despite their empirical success, neural networks still have difﬁculty capturing compositional aspects of natural language. This work proposes a simple data augmentation approach to encourage compositional behavior in neural models for sequence-to-sequence problems. Our approach, SeqMix, creates new synthetic examples by softly combining input/output sequences from the training set. We connect this approach to existing techniques such as SwitchOut (Wang et al., 2018) and word dropout (Sennrich et al., 2016), and show that these techniques are all approximating variants of a single objective. SeqMix consistently yields approximately 1.0 BLEU improvement on ﬁve different translation datasets over strong Transformer baselines. On tasks that require strong compositional generalization such as SCAN and semantic parsing, SeqMix also offers further improvements.},
+	language = {en},
+	urldate = {2021-03-04},
+	journal = {arXiv:2011.09039 [cs]},
+	author = {Guo, Demi and Kim, Yoon and Rush, Alexander M.},
+	month = nov,
+	year = {2020},
+	note = {arXiv: 2011.09039},
+	keywords = {Computer Science - Computation and Language, Computer Science - Machine Learning},
+}
+
+@inproceedings{
+dusell2024stack,
+title={Stack Attention: Improving the Ability of Transformers to Model Hierarchical Patterns},
+author={Brian DuSell and David Chiang},
+booktitle={The Twelfth International Conference on Learning Representations},
+year={2024},
+url={https://openreview.net/forum?id=XVhm3X8Fum}
+}
+
+@inproceedings{zelle1996learning,
+  title={Learning to parse database queries using inductive logic programming},
+  author={Zelle, John M and Mooney, Raymond J},
+  booktitle={Proceedings of the national conference on artificial intelligence},
+  pages={1050--1055},
+  year={1996}
+}
+
+@article{kim2022uncontrolled,
+  title={Uncontrolled lexical exposure leads to overestimation of compositional generalization in pretrained models},
+  author={Kim, Najoung and Linzen, Tal and Smolensky, Paul},
+  journal={arXiv preprint arXiv:2212.10769},
+  year={2022}
+}
+@book{chomsky_aspects_1965,
+	address = {Cambridge, Massachusetts},
+	edition = {50th Anniversary Edition},
+	series = {Massachusetts {Institute} of {Technology}. {Research} {Laboratory} of {Electronics}. {Special} technical report},
+	title = {Aspects of the theory of syntax},
+	isbn = {978-0-262-52740-8},
+	number = {no. 11},
+	publisher = {The MIT Press},
+	author = {Chomsky, Noam},
+	year = {1965},
+	keywords = {Grammar, Comparative and general, Syntax},
+}
+
+@book{goldberg_constructions_2006,
+	address = {Oxford; New York},
+	title = {Constructions at work: the nature of generalization in language},
+	shorttitle = {Constructions at work},
+	url = {http://public.ebookcentral.proquest.com/choice/publicfullrecord.aspx?p=3052348},
+	abstract = {Includes selected classic and contemporary papers in four areas, this text introduces each field, providing technical background for the non-specialist and explaining the underlying connections across the disciplines.},
+	language = {English.},
+	urldate = {2020-06-23},
+	publisher = {Oxford University Press},
+	author = {Goldberg, Adele E},
+	year = {2006},
+	note = {OCLC: 193697889},
+}
+
+@article{Griffiths2020UnderstandingHI,
+  title={Understanding Human Intelligence through Human Limitations},
+  author={Thomas L. Griffiths},
+  journal={Trends in Cognitive Sciences},
+  year={2020},
+  volume={24},
+  pages={873-883},
+  url={https://api.semanticscholar.org/CorpusID:221996148}
+}
+
+@article{belinkov2019analysis,
+  title={Analysis methods in neural language processing: A survey},
+  author={Belinkov, Yonatan and Glass, James},
+  journal={Transactions of the Association for Computational Linguistics},
+  volume={7},
+  pages={49--72},
+  year={2019},
+  publisher={MIT Press One Rogers Street, Cambridge, MA 02142-1209, USA journals-info~…}
+}
+
+@article{blevins2018deep,
+  title={Deep RNNs encode soft hierarchical syntax},
+  author={Blevins, Terra and Levy, Omer and Zettlemoyer, Luke},
+  journal={arXiv preprint arXiv:1805.04218},
+  year={2018}
+}
+
+@article{murty2022characterizing,
+  title={Characterizing intrinsic compositionality in transformers with tree projections},
+  author={Murty, Shikhar and Sharma, Pratyusha and Andreas, Jacob and Manning, Christopher D},
+  journal={arXiv preprint arXiv:2211.01288},
+  year={2022}
+}
+
+@article{soulos2019discovering,
+  title={Discovering the compositional structure of vector representations with role learning networks},
+  author={Soulos, Paul and McCoy, Tom and Linzen, Tal and Smolensky, Paul},
+  journal={arXiv preprint arXiv:1910.09113},
+  year={2019}
+}
+@article{mccoy2018rnns,
+  title={RNNs implicitly implement tensor product representations},
+  author={McCoy, R Thomas and Linzen, Tal and Dunbar, Ewan and Smolensky, Paul},
+  journal={arXiv preprint arXiv:1812.08718},
+  year={2018}
+}
+
+@incollection{cuetos2013parsing,
+  title={Parsing in different languages},
+  author={Cuetos, Fernando and Mitchell, Don C and Corley, Martin MB},
+  booktitle={Language processing in Spanish},
+  pages={163--208},
+  year={2013},
+  publisher={Psychology Press}
+}
+
+@article{tai2015improved,
+  title={Improved semantic representations from tree-structured long short-term memory networks},
+  author={Tai, Kai Sheng and Socher, Richard and Manning, Christopher D},
+  journal={arXiv preprint arXiv:1503.00075},
+  year={2015}
+}
+
+@article{dong2016language,
+  title={Language to logical form with neural attention},
+  author={Dong, Li and Lapata, Mirella},
+  journal={arXiv preprint arXiv:1601.01280},
+  year={2016}
+}
+
+@article{wang2019tree,
+  title={Tree transformer: Integrating tree structures into self-attention},
+  author={Wang, Yau-Shian and Lee, Hung-Yi and Chen, Yun-Nung},
+  journal={arXiv preprint arXiv:1909.06639},
+  year={2019}
+}
+
+@article{shiv2019novel,
+  title={Novel positional encodings to enable tree-based transformers},
+  author={Shiv, Vighnesh and Quirk, Chris},
+  journal={Advances in neural information processing systems},
+  volume={32},
+  year={2019}
+}
+
+@article{joulin2015inferring,
+  title={Inferring algorithmic patterns with stack-augmented recurrent nets},
+  author={Joulin, Armand and Mikolov, Tomas},
+  journal={Advances in neural information processing systems},
+  volume={28},
+  year={2015}
+}
+
+@article{grefenstette2015learning,
+  title={Learning to transduce with unbounded memory},
+  author={Grefenstette, Edward and Hermann, Karl Moritz and Suleyman, Mustafa and Blunsom, Phil},
+  journal={Advances in neural information processing systems},
+  volume={28},
+  year={2015}
+}
+
+@article{patel2022revisiting,
+  title={Revisiting the compositional generalization abilities of neural sequence models},
+  author={Patel, Arkil and Bhattamishra, Satwik and Blunsom, Phil and Goyal, Navin},
+  journal={arXiv preprint arXiv:2203.07402},
+  year={2022}
+}
+
+@inproceedings{socher-etal-2012-semantic,
+    title = "Semantic Compositionality through Recursive Matrix-Vector Spaces",
+    author = "Socher, Richard  and
+      Huval, Brody  and
+      Manning, Christopher D.  and
+      Ng, Andrew Y.",
+    editor = "Tsujii, Jun{'}ichi  and
+      Henderson, James  and
+      Pa{\c{s}}ca, Marius",
+    booktitle = "Proceedings of the 2012 Joint Conference on Empirical Methods in Natural Language Processing and Computational Natural Language Learning",
+    month = jul,
+    year = "2012",
+    address = "Jeju Island, Korea",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/D12-1110",
+    pages = "1201--1211",
+}
+
+@article{conklin2021meta,
+  title={Meta-learning to compositionally generalize},
+  author={Conklin, Henry and Wang, Bailin and Smith, Kenny and Titov, Ivan},
+  journal={arXiv preprint arXiv:2106.04252},
+  year={2021}
+}
+
+@article{lindemann2023compositional,
+  title={Compositional generalization without trees using multiset tagging and latent permutations},
+  author={Lindemann, Matthias and Koller, Alexander and Titov, Ivan},
+  journal={arXiv preprint arXiv:2305.16954},
+  year={2023}
+}
+
+@article{russin2019compositional,
+  title={Compositional generalization in a deep seq2seq model by separating syntax and semantics},
+  author={Russin, Jake and Jo, Jason and O'Reilly, Randall C and Bengio, Yoshua},
+  journal={arXiv preprint arXiv:1904.09708},
+  year={2019}
+}
+
+@article{lake2019compositional,
+  title={Compositional generalization through meta sequence-to-sequence learning},
+  author={Lake, Brenden M},
+  journal={Advances in neural information processing systems},
+  volume={32},
+  year={2019}
+}
+
+@article{dusell2021learning,
+  title={Learning hierarchical structures with differentiable nondeterministic stacks},
+  author={DuSell, Brian and Chiang, David},
+  journal={arXiv preprint arXiv:2109.01982},
+  year={2021}
+}
+
+@article{chen2020compositional,
+  title={Compositional generalization via neural-symbolic stack machines},
+  author={Chen, Xinyun and Liang, Chen and Yu, Adams Wei and Song, Dawn and Zhou, Denny},
+  journal={Advances in Neural Information Processing Systems},
+  volume={33},
+  pages={1690--1701},
+  year={2020}
+}
+
+@book{pinker2003language,
+  title={The language instinct: How the mind creates language},
+  author={Pinker, Steven},
+  year={2003},
+  publisher={Penguin uK}
+}
+
+@inproceedings{huang2022directed,
+  title={Directed acyclic transformer for non-autoregressive machine translation},
+  author={Huang, Fei and Zhou, Hao and Liu, Yang and Li, Hang and Huang, Minlie},
+  booktitle={International Conference on Machine Learning},
+  pages={9410--9428},
+  year={2022},
+  organization={PMLR}
+}
+
+@article{Smolensky_1988, title={On the proper treatment of connectionism}, volume={11}, DOI={10.1017/S0140525X00052432}, number={1}, journal={Behavioral and Brain Sciences}, author={Smolensky, Paul}, year={1988}, pages={1–23}}
+
+@book{Marcus2001-MARTAM-10,
+	author = {Gary F. Marcus},
+	editor = {},
+	publisher = {MIT Press},
+	title = {The Algebraic Mind: Integrating Connectionism and Cognitive Science},
+	year = {2001}
+}
+
+@book{garcez2008neural,
+  title={Neural-symbolic cognitive reasoning},
+  author={Garcez, Artur SD'Avila and Lamb, Luis C and Gabbay, Dov M},
+  year={2008},
+  publisher={Springer Science \& Business Media}
+}
+
+@inproceedings{devlin-etal-2019-bert,
+    title = "{BERT}: Pre-training of Deep Bidirectional Transformers for Language Understanding",
+    author = "Devlin, Jacob  and
+      Chang, Ming-Wei  and
+      Lee, Kenton  and
+      Toutanova, Kristina",
+    editor = "Burstein, Jill  and
+      Doran, Christy  and
+      Solorio, Thamar",
+    booktitle = "Proceedings of the 2019 Conference of the North {A}merican Chapter of the Association for Computational Linguistics: Human Language Technologies, Volume 1 (Long and Short Papers)",
+    month = jun,
+    year = "2019",
+    address = "Minneapolis, Minnesota",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/N19-1423",
+    doi = "10.18653/v1/N19-1423",
+    pages = "4171--4186",
+    abstract = "We introduce a new language representation model called BERT, which stands for Bidirectional Encoder Representations from Transformers. Unlike recent language representation models (Peters et al., 2018a; Radford et al., 2018), BERT is designed to pre-train deep bidirectional representations from unlabeled text by jointly conditioning on both left and right context in all layers. As a result, the pre-trained BERT model can be fine-tuned with just one additional output layer to create state-of-the-art models for a wide range of tasks, such as question answering and language inference, without substantial task-specific architecture modifications. BERT is conceptually simple and empirically powerful. It obtains new state-of-the-art results on eleven natural language processing tasks, including pushing the GLUE score to 80.5 (7.7 point absolute improvement), MultiNLI accuracy to 86.7{\%} (4.6{\%} absolute improvement), SQuAD v1.1 question answering Test F1 to 93.2 (1.5 point absolute improvement) and SQuAD v2.0 Test F1 to 83.1 (5.1 point absolute improvement).",
+}
+
+@article{t5,
+author = {Raffel, Colin and Shazeer, Noam and Roberts, Adam and Lee, Katherine and Narang, Sharan and Matena, Michael and Zhou, Yanqi and Li, Wei and Liu, Peter J.},
+title = {Exploring the limits of transfer learning with a unified text-to-text transformer},
+year = {2020},
+issue_date = {January 2020},
+publisher = {JMLR.org},
+volume = {21},
+number = {1},
+issn = {1532-4435},
+abstract = {Transfer learning, where a model is first pre-trained on a data-rich task before being fine-tuned on a downstream task, has emerged as a powerful technique in natural language processing (NLP). The effectiveness of transfer learning has given rise to a diversity of approaches, methodology, and practice. In this paper, we explore the landscape of transfer learning techniques for NLP by introducing a unified framework that converts all text-based language problems into a text-to-text format. Our systematic study compares pretraining objectives, architectures, unlabeled data sets, transfer approaches, and other factors on dozens of language understanding tasks. By combining the insights from our exploration with scale and our new "Colossal Clean Crawled Corpus", we achieve state-of-the-art results on many benchmarks covering summarization, question answering, text classification, and more. To facilitate future work on transfer learning for NLP, we release our data set, pre-trained models, and code.},
+journal = {J. Mach. Learn. Res.},
+month = {jan},
+articleno = {140},
+numpages = {67},
+keywords = {deep learning, attention based models, multi-task learning, natural language processing, transfer learning}
+}
+
+@article{nslr,
+  author       = {Tarek R. Besold and
+                  Artur S. d'Avila Garcez and
+                  Sebastian Bader and
+                  Howard Bowman and
+                  Pedro M. Domingos and
+                  Pascal Hitzler and
+                  Kai{-}Uwe K{\"{u}}hnberger and
+                  Lu{\'{\i}}s C. Lamb and
+                  Daniel Lowd and
+                  Priscila Machado Vieira Lima and
+                  Leo de Penning and
+                  Gadi Pinkas and
+                  Hoifung Poon and
+                  Gerson Zaverucha},
+  title        = {Neural-Symbolic Learning and Reasoning: {A} Survey and Interpretation},
+  journal      = {CoRR},
+  volume       = {abs/1711.03902},
+  year         = {2017},
+  url          = {http://arxiv.org/abs/1711.03902},
+  eprinttype    = {arXiv},
+  eprint       = {1711.03902},
+  timestamp    = {Mon, 13 Aug 2018 16:48:12 +0200},
+  biburl       = {https://dblp.org/rec/journals/corr/abs-1711-03902.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{GARNELO201917,
+title = {Reconciling deep learning with symbolic artificial intelligence: representing objects and relations},
+journal = {Current Opinion in Behavioral Sciences},
+volume = {29},
+pages = {17-23},
+year = {2019},
+note = {Artificial Intelligence},
+issn = {2352-1546},
+doi = {https://doi.org/10.1016/j.cobeha.2018.12.010},
+url = {https://www.sciencedirect.com/science/article/pii/S2352154618301943},
+author = {Marta Garnelo and Murray Shanahan},
+abstract = {In the history of the quest for human-level artificial intelligence, a number of rival paradigms have vied for supremacy. Symbolic artificial intelligence was dominant for much of the 20th century, but currently a connectionist paradigm is in the ascendant, namely machine learning with deep neural networks. However, both paradigms have strengths and weaknesses, and a significant challenge for the field today is to effect a reconciliation. A central tenet of the symbolic paradigm is that intelligence results from the manipulation of abstract compositional representations whose elements stand for objects and relations. If this is correct, then a key objective for deep learning is to develop architectures capable of discovering objects and relations in raw data, and learning how to represent them in ways that are useful for downstream processing. This short review highlights recent progress in this direction.}
+}
+
+@article{kim_cogs_2020,
+	title = {{COGS}: {A} {Compositional} {Generalization} {Challenge} {Based} on {Semantic} {Interpretation}},
+	shorttitle = {{COGS}},
+	url = {http://arxiv.org/abs/2010.05465},
+	abstract = {Natural language is characterized by compositionality: the meaning of a complex expression is constructed from the meanings of its constituent parts. To facilitate the evaluation of the compositional abilities of language processing architectures, we introduce COGS, a semantic parsing dataset based on a fragment of English. The evaluation portion of COGS contains multiple systematic gaps that can only be addressed by compositional generalization; these include new combinations of familiar syntactic structures, or new combinations of familiar words and familiar structures. In experiments with Transformers and LSTMs, we found that in-distribution accuracy on the COGS test set was near-perfect (96–99\%), but generalization accuracy was substantially lower (16–35\%) and showed high sensitivity to random seed (±6–8\%). These ﬁndings indicate that contemporary standard NLP models are limited in their compositional generalization capacity, and position COGS as a good way to measure progress.},
+	language = {en},
+	urldate = {2021-01-25},
+	journal = {arXiv:2010.05465 [cs]},
+	author = {Kim, Najoung and Linzen, Tal},
+	month = oct,
+	year = {2020},
+	note = {arXiv: 2010.05465},
+	keywords = {Computer Science - Computation and Language},
+}
+
+@misc{Soulos_2023_DifferentiableTreeOperations,
+	title = {Differentiable {Tree} {Operations} {Promote} {Compositional} {Generalization}},
+	url = {http://arxiv.org/abs/2306.00751},
+	doi = {10.48550/arXiv.2306.00751},
+	abstract = {In the context of structure-to-structure transformation tasks, learning sequences of discrete symbolic operations poses significant challenges due to their non-differentiability. To facilitate the learning of these symbolic sequences, we introduce a differentiable tree interpreter that compiles high-level symbolic tree operations into subsymbolic matrix operations on tensors. We present a novel Differentiable Tree Machine (DTM) architecture that integrates our interpreter with an external memory and an agent that learns to sequentially select tree operations to execute the target transformation in an end-to-end manner. With respect to out-of-distribution compositional generalization on synthetic semantic parsing and language generation tasks, DTM achieves 100\% while existing baselines such as Transformer, Tree Transformer, LSTM, and Tree2Tree LSTM achieve less than 30\%. DTM remains highly interpretable in addition to its perfect performance.},
+	urldate = {2023-06-05},
+	publisher = {arXiv},
+	author = {Soulos, Paul and Hu, Edward and McCurdy, Kate and Chen, Yunmo and Fernandez, Roland and Smolensky, Paul and Gao, Jianfeng},
+	month = jun,
+	year = {2023},
+	note = {arXiv:2306.00751 [cs]},
+	annote = {Comment: ICML 2023. Code available at https://github.com/psoulos/dtm},
+	file = {Soulos et al. - 2023 - Differentiable Tree Operations Promote Composition.pdf:/Users/psoulos/Zotero/storage/WSWQKEIJ/Soulos et al. - 2023 - Differentiable Tree Operations Promote Composition.pdf:application/pdf},
+}
+
+
+@InProceedings{pmlr-v97-lee19d,
+  title = 	 {Set Transformer: A Framework for Attention-based Permutation-Invariant Neural Networks},
+  author =       {Lee, Juho and Lee, Yoonho and Kim, Jungtaek and Kosiorek, Adam and Choi, Seungjin and Teh, Yee Whye},
+  booktitle = 	 {Proceedings of the 36th International Conference on Machine Learning},
+  pages = 	 {3744--3753},
+  year = 	 {2019},
+  editor = 	 {Chaudhuri, Kamalika and Salakhutdinov, Ruslan},
+  volume = 	 {97},
+  series = 	 {Proceedings of Machine Learning Research},
+  month = 	 {09--15 Jun},
+  publisher =    {PMLR},
+  pdf = 	 {http://proceedings.mlr.press/v97/lee19d/lee19d.pdf},
+  url = 	 {https://proceedings.mlr.press/v97/lee19d.html},
+  abstract = 	 {Many machine learning tasks such as multiple instance learning, 3D shape recognition, and few-shot image classification are defined on sets of instances. Since solutions to such problems do not depend on the order of elements of the set, models used to address them should be permutation invariant. We present an attention-based neural network module, the Set Transformer, specifically designed to model interactions among elements in the input set. The model consists of an encoder and a decoder, both of which rely on attention mechanisms. In an effort to reduce computational complexity, we introduce an attention scheme inspired by inducing point methods from sparse Gaussian process literature. It reduces the computation time of self-attention from quadratic to linear in the number of elements in the set. We show that our model is theoretically attractive and we evaluate it on a range of tasks, demonstrating the state-of-the-art performance compared to recent methods for set-structured data.}
+}
+
+@article{
+li2023representations,
+title={Representations and Computations in Transformers that Support Generalization on Structured Tasks},
+author={Yuxuan Li and James McClelland},
+journal={Transactions on Machine Learning Research},
+issn={2835-8856},
+year={2023},
+url={https://openreview.net/forum?id=oFC2LAqS6Z},
+note={}
+}
+
+@inproceedings{ruoss-etal-2023-randomized,
+    title = "Randomized Positional Encodings Boost Length Generalization of Transformers",
+    author = "Ruoss, Anian  and
+      Del{\'e}tang, Gr{\'e}goire  and
+      Genewein, Tim  and
+      Grau-Moya, Jordi  and
+      Csord{\'a}s, R{\'o}bert  and
+      Bennani, Mehdi  and
+      Legg, Shane  and
+      Veness, Joel",
+    editor = "Rogers, Anna  and
+      Boyd-Graber, Jordan  and
+      Okazaki, Naoaki",
+    booktitle = "Proceedings of the 61st Annual Meeting of the Association for Computational Linguistics (Volume 2: Short Papers)",
+    month = jul,
+    year = "2023",
+    address = "Toronto, Canada",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/2023.acl-short.161",
+    doi = "10.18653/v1/2023.acl-short.161",
+    pages = "1889--1903",
+    abstract = "Transformers have impressive generalization capabilities on tasks with a fixed context length. However, they fail to generalize to sequences of arbitrary length, even for seemingly simple tasks such as duplicating a string. Moreover, simply training on longer sequences is inefficient due to the quadratic computation complexity of the global attention mechanism. In this work, we demonstrate that this failure mode is linked to positional encodings being out-of-distribution for longer sequences (even for relative encodings) and introduce a novel family of positional encodings that can overcome this problem. Concretely, our randomized positional encoding scheme simulates the positions of longer sequences and randomly selects an ordered subset to fit the sequence{'}s length. Our large-scale empirical evaluation of 6000 models across 15 algorithmic reasoning tasks shows that our method allows Transformers to generalize to sequences of unseen length (increasing test accuracy by 12.0{\%} on average).",
+}
+
+@inproceedings{NEURIPS2019_6e091746,
+ author = {Shiv, Vighnesh and Quirk, Chris},
+ booktitle = {Advances in Neural Information Processing Systems},
+ editor = {H. Wallach and H. Larochelle and A. Beygelzimer and F. d\textquotesingle Alch\'{e}-Buc and E. Fox and R. Garnett},
+ pages = {},
+ publisher = {Curran Associates, Inc.},
+ title = {Novel positional encodings to enable tree-based transformers},
+ url = {https://proceedings.neurips.cc/paper_files/paper/2019/file/6e0917469214d8fbd8c517dcdc6b8dcf-Paper.pdf},
+ volume = {32},
+ year = {2019}
+}
+
+@inproceedings{gayler2003vsa_jackendoff,
+  title={Vector Symbolic Architectures answer Jackendoff's challenges for cognitive neuroscience},
+  author = {Ross W Gayler},
+  booktitle = {Proceedings of the ICCS/ASCS Joint International Conference on Cognitive Science (ICCS/ASCS 2003)},
+  pages={133--138},
+  month = {jul},
+  year={2003},
+  date={2003-07-17},
+  publisher = {University of New South Wales},
+  address = {Sydney, NSW, AU},
+  editor = {Slezak, Peter},
+  archivePrefix = {arXiv},
+  arxivId = {cs/0412059v1},
+  eprint = {0412059v1},
+  primaryClass = {cs},
+  url = {http://arxiv.org/abs/cs/0412059}
+}
+
+@book{plate,
+author = {Plate, Tony A.},
+title = {Holographic Reduced Representation: Distributed Representation for Cognitive Structures},
+year = {2003},
+isbn = {1575864290},
+publisher = {CSLI Publications},
+address = {USA}
+}
+
+@article{kanerva2009hyperdimensional,
+  title={Hyperdimensional computing: An introduction to computing in distributed representation with high-dimensional random vectors},
+  author={Kanerva, Pentti},
+  journal={Cognitive computation},
+  volume={1},
+  pages={139--159},
+  year={2009},
+  publisher={Springer}
+}
+
+@article{kleyko2022,
+author = {Kleyko, Denis and Rachkovskij, Dmitri A. and Osipov, Evgeny and Rahimi, Abbas},
+title = {A Survey on Hyperdimensional Computing Aka Vector Symbolic Architectures, Part I: Models and Data Transformations},
+year = {2022},
+issue_date = {June 2023},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+volume = {55},
+number = {6},
+issn = {0360-0300},
+url = {https://doi.org/10.1145/3538531},
+doi = {10.1145/3538531},
+abstract = {This two-part comprehensive survey is devoted to a computing framework most commonly known under the names Hyperdimensional Computing and Vector Symbolic Architectures (HDC/VSA). Both names refer to a family of computational models that use high-dimensional distributed representations and rely on the algebraic properties of their key operations to incorporate the advantages of structured symbolic representations and distributed vector representations. Notable models in the HDC/VSA family are Tensor Product Representations, Holographic Reduced Representations, Multiply-Add-Permute, Binary Spatter Codes, and Sparse Binary Distributed Representations but there are other models too. HDC/VSA is a highly interdisciplinary field with connections to computer science, electrical engineering, artificial intelligence, mathematics, and cognitive science. This fact makes it challenging to create a thorough overview of the field. However, due to a surge of new researchers joining the field in recent years, the necessity for a comprehensive survey of the field has become extremely important. Therefore, amongst other aspects of the field, this Part I surveys important aspects such as: known computational models of HDC/VSA and transformations of various input data types to high-dimensional distributed representations. Part II of this survey [84] is devoted to applications, cognitive computing and architectures, as well as directions for future work. The survey is written to be useful for both newcomers and practitioners.},
+journal = {ACM Comput. Surv.},
+month = {dec},
+articleno = {130},
+numpages = {40},
+keywords = {tensor product representations, holographic reduced representations, machine learning, Artificial intelligence, modular composite representations, sparse binary distributed representations, sparse block codes, multiply-add-permute, geometric analogue of holographic reduced representations, data structures, hyperdimensional computing, binary spatter codes, distributed representations, matrix binding of additive terms, vector symbolic architectures}
+}
+
+@inproceedings{
+yogatama2018memory,
+title={Memory Architectures in Recurrent Neural Network Language Models},
+author={Dani Yogatama and Yishu Miao and Gabor Melis and Wang Ling and Adhiguna Kuncoro and Chris Dyer and Phil Blunsom},
+booktitle={International Conference on Learning Representations},
+year={2018},
+url={https://openreview.net/forum?id=SkFqf0lAZ},
+}
+
+@article{vaswani2017attention,
+  title={Attention is all you need},
+  author={Vaswani, Ashish and Shazeer, Noam and Parmar, Niki and Uszkoreit, Jakob and Jones, Llion and Gomez, Aidan N and Kaiser, {\L}ukasz and Polosukhin, Illia},
+  journal={Advances in neural information processing systems},
+  volume={30},
+  year={2017}
+}
+
+
+@inproceedings{Sun_2023_ReplicationStudyCompositional,
+	title = {A {Replication} {Study} of {Compositional} {Generalization} {Works} on {Semantic} {Parsing}},
+	url = {https://openreview.net/forum?id=MF9uv95psps},
+	abstract = {Reproducibility Summary Scope of Reproducibility — We examine the reproducibility of compositional generalization results from the task of semantic parsing. We aim to reproduce results from [1], [2], and [3] and seek to verify the claims that 1. A model shouldn't be expected to perform well on non-synthetic datasets just because it performs well on SCAN [1], 2. The approaches from [1] and [2] meet or exceed baseline performance on compositional generalization tests, and 3. NQG-T5 [1] outperforms baselines on both synthetic and natural data. 4. NQG [1] performs well on the instances that it is able to generate a prediction, but it faces the barrier of not being able to generate predictions for all instances. Methodology — We reuse the authors' code along with additional code to run extra experiments, and we re-implement scripts whose support is deprecated. Eight 32GB GPUs were used for experiments, with a detailed description in Section 3.3. Results — Claim 1 is verified: the model with the highest performance on SCAN does not maintain its high performance on other datasets (Section 4.1). Claims 2 and 3 are verified, with a comparison of performance between NQG-T5 and the selected baseline models in [1] and [2]. Claim 4 is also verified by computing the coverage and precision of NQG in Section 4.4. Overall, accuracy for most experiments reaches within 2\% of that reported in the original paper, with a deviation that our T5 achieves higher performance on some splits and slightly lower performance on one split than reported previously. What was easy — All papers provide clearly‐written code and informative documentation, as well as lists of hyperparameters that are used for experiments. The papers also describe their approaches clearly, making the experimental workflow easy to follow. What was difficult — The exact match evaluation metric is formulated somewhat differently across all three papers, leading to a non‐negligible value difference, as discussed in Section 5.2. We also had to re‐implement some training scripts because an original dependency is no longer supported. Moreover, some experiments are computationally expensive: [1] used TPUs for experiments, while our replication with GPUs take several days to train a single T5 model. Communication with original authors — The authors of all three papers provided us with useful instruction to work with their methods and constructive feedback on the draft.},
+	language = {en},
+	urldate = {2024-03-21},
+	author = {Sun, Kaiser and Williams, Adina and Hupkes, Dieuwke},
+	month = aug,
+	year = {2023},
+	file = {Full Text PDF:/Users/psoulos/Zotero/storage/A2K6CK23/Sun et al. - 2023 - A Replication Study of Compositional Generalizatio.pdf:application/pdf},
+}
+
+
+@inproceedings{csordas-etal-2021-devil,
+    title = "The Devil is in the Detail: Simple Tricks Improve Systematic Generalization of Transformers",
+    author = "Csord{\'a}s, R{\'o}bert  and
+      Irie, Kazuki  and
+      Schmidhuber, Juergen",
+    editor = "Moens, Marie-Francine  and
+      Huang, Xuanjing  and
+      Specia, Lucia  and
+      Yih, Scott Wen-tau",
+    booktitle = "Proceedings of the 2021 Conference on Empirical Methods in Natural Language Processing",
+    month = nov,
+    year = "2021",
+    address = "Online and Punta Cana, Dominican Republic",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/2021.emnlp-main.49",
+    doi = "10.18653/v1/2021.emnlp-main.49",
+    pages = "619--634",
+    abstract = "Recently, many datasets have been proposed to test the systematic generalization ability of neural networks. The companion baseline Transformers, typically trained with default hyper-parameters from standard tasks, are shown to fail dramatically. Here we demonstrate that by revisiting model configurations as basic as scaling of embeddings, early stopping, relative positional embedding, and Universal Transformer variants, we can drastically improve the performance of Transformers on systematic generalization. We report improvements on five popular datasets: SCAN, CFQ, PCFG, COGS, and Mathematics dataset. Our models improve accuracy from 50{\%} to 85{\%} on the PCFG productivity split, and from 35{\%} to 81{\%} on COGS. On SCAN, relative positional embedding largely mitigates the EOS decision problem (Newman et al., 2020), yielding 100{\%} accuracy on the length split with a cutoff at 26. Importantly, performance differences between these models are typically invisible on the IID data split. This calls for proper generalization validation sets for developing neural networks that generalize systematically. We publicly release the code to reproduce our results.",
+}
+
+@inproceedings{NEURIPS2018_d759175d,
+ author = {Chen, Xinyun and Liu, Chang and Song, Dawn},
+ booktitle = {Advances in Neural Information Processing Systems},
+ editor = {S. Bengio and H. Wallach and H. Larochelle and K. Grauman and N. Cesa-Bianchi and R. Garnett},
+ pages = {},
+ publisher = {Curran Associates, Inc.},
+ title = {Tree-to-tree Neural Networks for Program Translation},
+ url = {https://proceedings.neurips.cc/paper_files/paper/2018/file/d759175de8ea5b1d9a2660e45554894f-Paper.pdf},
+ volume = {31},
+ year = {2018}
+}
+
+@inproceedings{shaw-etal-2021-compositional,
+    title = "Compositional Generalization and Natural Language Variation: Can a Semantic Parsing Approach Handle Both?",
+    author = "Shaw, Peter  and
+      Chang, Ming-Wei  and
+      Pasupat, Panupong  and
+      Toutanova, Kristina",
+    editor = "Zong, Chengqing  and
+      Xia, Fei  and
+      Li, Wenjie  and
+      Navigli, Roberto",
+    booktitle = "Proceedings of the 59th Annual Meeting of the Association for Computational Linguistics and the 11th International Joint Conference on Natural Language Processing (Volume 1: Long Papers)",
+    month = aug,
+    year = "2021",
+    address = "Online",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/2021.acl-long.75",
+    doi = "10.18653/v1/2021.acl-long.75",
+    pages = "922--938",
+    abstract = "Sequence-to-sequence models excel at handling natural language variation, but have been shown to struggle with out-of-distribution compositional generalization. This has motivated new specialized architectures with stronger compositional biases, but most of these approaches have only been evaluated on synthetically-generated datasets, which are not representative of natural language variation. In this work we ask: can we develop a semantic parsing approach that handles both natural language variation and compositional generalization? To better assess this capability, we propose new train and test splits of non-synthetic datasets. We demonstrate that strong existing approaches do not perform well across a broad set of evaluations. We also propose NQG-T5, a hybrid model that combines a high-precision grammar-based approach with a pre-trained sequence-to-sequence model. It outperforms existing approaches across several compositional generalization challenges on non-synthetic data, while also being competitive with the state-of-the-art on standard evaluations. While still far from solving this problem, our study highlights the importance of diverse evaluations and the open challenge of handling both compositional generalization and natural language variation in semantic parsing.",
+}
+
+@inproceedings{smith-eisner-2006-quasi,
+    title = "Quasi-Synchronous Grammars: Alignment by Soft Projection of Syntactic Dependencies",
+    author = "Smith, David  and
+      Eisner, Jason",
+    editor = "Koehn, Philipp  and
+      Monz, Christof",
+    booktitle = "Proceedings on the Workshop on Statistical Machine Translation",
+    month = jun,
+    year = "2006",
+    address = "New York City",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/W06-3104",
+    pages = "23--30",
+}
+
+@book{10.7551/mitpress/9780262527347.001.0001,
+    author = {Chomsky, Noam},
+    title = "{The Minimalist Program}",
+    publisher = {The MIT Press},
+    year = {2014},
+    month = {12},
+    abstract = "{A classic work that situates linguistic theory in the broader cognitive sciences, formulating and developing the minimalist program. In his foundational book, The Minimalist Program, published in 1995, Noam Chomsky offered a significant contribution to the generative tradition in linguistics. This twentieth-anniversary edition reissues this classic work with a new preface by the author. In four essays, Chomsky attempts to situate linguistic theory in the broader cognitive sciences, with the essays formulating and progressively developing the minimalist approach to linguistic theory. Building on the theory of principles and parameters and, in particular, on principles of economy of derivation and representation, the minimalist framework takes Universal Grammar as providing a unique computational system, with derivations driven by morphological properties, to which the syntactic variation of languages is also restricted. Within this theoretical framework, linguistic expressions are generated by optimally efficient derivations that must satisfy the conditions that hold on interface levels, the only levels of linguistic representation. The interface levels provide instructions to two types of performance systems, articulatory-perceptual and conceptual-intentional. All syntactic conditions, then, express properties of these interface levels, reflecting the interpretive requirements of language and keeping to very restricted conceptual resources. In the preface to this edition, Chomsky emphasizes that the minimalist approach developed in the book and in subsequent work “is a program, not a theory.” With this book, Chomsky built on pursuits from the earliest days of generative grammar to formulate a new research program that had far-reaching implications for the field.}",
+    isbn = {9780262327282},
+    doi = {10.7551/mitpress/9780262527347.001.0001},
+    url = {https://doi.org/10.7551/mitpress/9780262527347.001.0001},
+}
+
+
+@article{Lake_2018_GeneralizationSystematicityCompositional,
+	title = {Generalization without systematicity: {On} the compositional skills of sequence-to-sequence recurrent networks},
+	volume = {7},
+	abstract = {Humans can understand and produce new utterances effortlessly, thanks to their compositional skills. Once a person learns the meaning of a new verb "dax," he or she can immediately understand the meaning of "dax twice" or "sing and dax." In this paper, we introduce the SCAN domain, consisting of a set of simple compositional navigation commands paired with the corresponding action sequences. We then test the zero-shot generalization capabilities of a variety of recurrent neural networks (RNNs) trained on SCAN with sequence-to-sequence methods. We find that RNNs can make successful zero-shot generaliza-tions when the differences between training and test commands are small, so that they can apply "mix-and-match" strategies to solve the task. However, when generalization requires systematic compositional skills (as in the "dax" example above), RNNs fail spectacularly. We conclude with a proof-of-concept experiment in neural machine translation, suggesting that lack of systematicity might be partially responsible for neural networks' notorious training data thirst.},
+	journal = {35th International Conference on Machine Learning, ICML 2018},
+	author = {Lake, Brenden and Baroni, Marco},
+	year = {2018},
+	note = {arXiv: 1711.00350
+ISBN: 9781510867963},
+	pages = {4487--4499},
+	file = {Lake and Baroni - 2018 - Generalization without systematicity On the compo.pdf:/Users/psoulos/Zotero/storage/IWTYSLV4/Lake and Baroni - 2018 - Generalization without systematicity On the compo.pdf:application/pdf},
+}
+
+@inbook{gorn+1967+77+115,
+url = {https://doi.org/10.3138/9781487592769-008},
+title = {Explicit Definitions and Linguistic Dominoes},
+booktitle = {Systems and Computer Science},
+author = {Saul Gorn},
+publisher = {University of Toronto Press},
+address = {Toronto},
+pages = {77--115},
+doi = {doi:10.3138/9781487592769-008},
+isbn = {9781487592769},
+year = {1967},
+lastchecked = {2024-05-07}
+}
+
+@ARTICLE{bishop-noise,
+  author={Bishop, Chris M.},
+  journal={Neural Computation}, 
+  title={Training with Noise is Equivalent to Tikhonov Regularization}, 
+  year={1995},
+  volume={7},
+  number={1},
+  pages={108-116},
+  keywords={},
+  doi={10.1162/neco.1995.7.1.108}}
+
+@inproceedings{xiong2020layer,
+  title={On layer normalization in the transformer architecture},
+  author={Xiong, Ruibin and Yang, Yunchang and He, Di and Zheng, Kai and Zheng, Shuxin and Xing, Chen and Zhang, Huishuai and Lan, Yanyan and Wang, Liwei and Liu, Tieyan},
+  booktitle={International Conference on Machine Learning},
+  pages={10524--10533},
+  year={2020},
+  organization={PMLR}
+}
+
+@inproceedings{kim-linzen-2020-cogs,
+    title = "{COGS}: A Compositional Generalization Challenge Based on Semantic Interpretation",
+    author = "Kim, Najoung  and
+      Linzen, Tal",
+    editor = "Webber, Bonnie  and
+      Cohn, Trevor  and
+      He, Yulan  and
+      Liu, Yang",
+    booktitle = "Proceedings of the 2020 Conference on Empirical Methods in Natural Language Processing (EMNLP)",
+    month = nov,
+    year = "2020",
+    address = "Online",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/2020.emnlp-main.731",
+    doi = "10.18653/v1/2020.emnlp-main.731",
+    pages = "9087--9105",
+    abstract = "Natural language is characterized by compositionality: the meaning of a complex expression is constructed from the meanings of its constituent parts. To facilitate the evaluation of the compositional abilities of language processing architectures, we introduce COGS, a semantic parsing dataset based on a fragment of English. The evaluation portion of COGS contains multiple systematic gaps that can only be addressed by compositional generalization; these include new combinations of familiar syntactic structures, or new combinations of familiar words and familiar structures. In experiments with Transformers and LSTMs, we found that in-distribution accuracy on the COGS test set was near-perfect (96{--}99{\%}), but generalization accuracy was substantially lower (16{--}35{\%}) and showed high sensitivity to random seed (+-6{--}8{\%}). These findings indicate that contemporary standard NLP models are limited in their compositional generalization capacity, and position COGS as a good way to measure progress.",
+}
+
+@inproceedings{
+keysers2020measuring,
+title={Measuring Compositional Generalization: A Comprehensive Method on Realistic Data},
+author={Daniel Keysers and Nathanael Sch{\"a}rli and Nathan Scales and Hylke Buisman and Daniel Furrer and Sergii Kashubin and Nikola Momchev and Danila Sinopalnikov and Lukasz Stafiniak and Tibor Tihon and Dmitry Tsarkov and Xiao Wang and Marc van Zee and Olivier Bousquet},
+booktitle={International Conference on Learning Representations},
+year={2020},
+url={https://openreview.net/forum?id=SygcCnNKwr}
+}
+
+@article{nye2020learning,
+  title={Learning compositional rules via neural program synthesis},
+  author={Nye, Maxwell and Solar-Lezama, Armando and Tenenbaum, Josh and Lake, Brenden M},
+  journal={Advances in Neural Information Processing Systems},
+  volume={33},
+  pages={10832--10842},
+  year={2020}
+}

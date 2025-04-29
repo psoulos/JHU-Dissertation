@@ -1,29 +1,296 @@
-\chapter{Chapter title goes here} \label{chap:chap-3}
+\newcommand{\dtm}[0]{\texttt{DTM}\xspace}
+\newcommand{\sdtm}[0]{\texttt{sDTM}\xspace}
+\newcommand{\fullrepname}{Sparse Coordinate Trees\xspace}
+\newcommand{\abvrepname}{SCT\xspace}
+\renewcommand{\car}{\texttt{car}\xspace}
+\renewcommand{\cdr}{\texttt{cdr}\xspace}
+\renewcommand{\cons}{\texttt{cons}\xspace}
+\newcommand{\leftcommand}{\texttt{left}\xspace}
+\newcommand{\rightcommand}{\texttt{right}\xspace}
 
-
-% epigraph after chapter heading
-\epigraph{Since it is written in \LaTeX, it must be true.}{-- Isaac Newton}
+\chapter{Compositional Generalization Across Distributional Shifts with Sparse Tree Operations} \label{chap:chap-3}
 
 
 %%%% MUST: add the citation for the chapter if it is a reprint
-
-
+\begin{singlespace}         % you can also use `onehalfspace` to relax the spacing
+    This chapter is reprinted from \fullcite{soulos2024compositional}. Licensed under CC BY 4.0.
+\end{singlespace} 
 
 %% remove the following and add your chapter text here
+\begin{abstract}
+    Neural networks continue to struggle with compositional generalization, and this issue is exacerbated by a lack of massive pre-training. One successful approach for developing neural systems which exhibit human-like compositional generalization is \textit{hybrid} neurosymbolic techniques. However, these techniques run into the core issues that plague symbolic approaches to AI: scalability and flexibility. The reason for this failure is that at their core, hybrid neurosymbolic models perform symbolic computation and relegate the scalable and flexible neural computation to parameterizing a symbolic system. We investigate a \textit{unified} neurosymbolic system where transformations in the network can be interpreted simultaneously as both symbolic and neural computation. We extend a unified neurosymbolic architecture called the Differentiable Tree Machine in two central ways. First, we significantly increase the model’s efficiency through the use of sparse vector representations of symbolic structures. Second, we enable its application beyond the restricted set of tree2tree problems to the more general class of seq2seq problems. The improved model retains its prior generalization capabilities and, since there is a fully neural path through the network, avoids the pitfalls of other neurosymbolic techniques that elevate symbolic computation over neural computation.
+\end{abstract}
+
 \section{Introduction}
-\blindtext 
+
+\begin{wrapfigure}[13]{r}{.425\linewidth}
+    \centering
+    \vspace{-5.2em}
+    \includegraphics[width=\linewidth]{images/sdtm/tight_radar/radar_integrated_legend.png}
+    %\vspace{-2.5em}
+    \caption{Generalization ability of our approach (\sdtm) compared with baselines across various out-of-distribution shifts, averaged over different datasets. See \S \ref{sec:sdtm-results}.}
+    \label{fig:enter-label}
+    \vspace{-1.5em}
+\end{wrapfigure}
 
 
-\section{Current approach}
-\blindtext\footnote{Hello, this is the first footnote with no indentation and single-spaced text. The spacing between two footnotes is also single-spaced.}
-
-\subsection{Hypothesis statement}
-\blindtext\footnote{This is the second footnote.}
+Deep learning models achieve remarkable performance across a broad range of natural language tasks \citep{vaswani2017attention}, despite having difficulty generalizing outside of their training data, struggling with new words \citep{Lake_2018_GeneralizationSystematicityCompositional}, known words in new contexts \citep{keysers2020measuring}, and novel syntactic structures, like longer sequences with greater recursive depth \citep{kim-linzen-2020-cogs, li_slog_2023}. Increasingly this problem is addressed through data augmentation, which tries to make it less likely a model will encounter something unlike what it sees during training --- reducing the degree by which it has to generalize \citep{andreas_good-enough_2020, devlin_bert_2019,  guo_sequence-level_2020}. However, even models trained on vast quantities of data struggle when evaluated on examples unlike those seen during training \citep{kim2022uncontrolled}.
 
 
-\subsection{Experimental evidences}
-\blindtext
+This stands in contrast to how humans process language, which enables robust generalization \citep{pinker2003language}. By breaking novel sentences into known parts, we can readily interpret phrases and constructions that we have never encountered before (e.g. `At the airport I smiled myself an upgrade', \citep{goldberg_constructions_2006}). Why do models trained on orders of magnitude more language data than a human hears in 200 lifetimes \citep{Griffiths2020UnderstandingHI} still fail to acquire some of language's most essential properties?
+
+Central to language's generalizability is compositional structure \citep{partee1995lexical} where contentful units, like words, fit together in a structure, like a syntactic tree. Many classical approaches in NLP and Machine Learning attempt to induce a grammar from data in the hope of leveraging the same kinds of generalization seen in natural language \citep[e.g.][]{ klein2002generative, kim2019compound, steedman1987combinatory}. However, structured representations are not first-order primitives in most neural networks \citep{Marcus2001-MARTAM-10, Smolensky_1988}. Despite theoretical appeal, the strictures of purely discrete symbolic approaches have made them difficult to apply to the breadth of tasks and domains where deep learning models have proven successful \citep{furrer2020compositional}. In contrast, purely connectionist models --- like Transformers \citep{vaswani2017attention} --- struggle with the kinds of sample efficiency and robust generalization ubiquitous to human learning. 
+
+Neurosymbolic methods attempt to integrate neural and symbolic techniques to arrive at a system that is both compositional and flexible \citep{nslr,garcez2008neural,GARNELO201917, Smolensky_1988}. While some neurosymbolic architectures achieve impressive compositional generalization, they are often brittle due to the symbolic core of their computation \citep{shaw-etal-2021-compositional}. These methods are hybrid neurosymbolic systems, where the primary computation is symbolic, and the neural network serves to parameterize the symbolic space. We take a different approach, one where symbolic operations happen in vector space. In our system, neural and symbolic computations are \textbf{unified} into a single space; we multiply and add vector-embedded symbolic structures instead of multiplying and adding individual neurons. %This technique is known as blending and superposition. % vector-embedded symbolic structures are blended together by superimposing them.
+
+We introduce a new technique for representing trees in vector space called \fullrepname (\abvrepname). \abvrepname allows us to perform structural operations: transformations which change the structure of an object without changing the content. This is a crucial aspect of compositionality, where the structure and content can be transformed independently. We extend the Differentiable Tree Machine (\dtm), a system which operates over binary trees in vector space, into the Sparse Differentiable Tree Machine (\sdtm) to improve performance and applicability to a larger variety of tasks\footnote{Code available at \url{https://github.com/psoulos/sdtm}.}. While \dtm processes vector-embedded binary trees as the primitive unit of computation, the order of operations and argument selection is governed by a Transformer. We present results showing that this unified approach retains many of the desirable properties of more brittle symbolic models with regards to generalization, while remaining flexible enough to work across a far wider set of tasks. 
+%Additionally we lay out a framework for evaluating generalization ability. Averaging scores across different tasks based on which of six different kinds of distributional shift they require a model to generalize to. 
+While fully neural architectures or hybrid neurosymbolic techniques excel at certain types of generalization, we find that \dtm, with its unified approach,  excels across the widest array of shifts.
+
+%In what follows we introduce a novel approach to unifying these lines of work;  a model architecture whose representational schema and internal operations are explicitly compositional, taking binary trees as its representational primitive. However, the order of operations applied and in what combination is governed by a transformer. We present results showing that this hybrid approach retains many of the desirable properties of more brittle symbolic models, while remaining flexible enough to work across a far wider set of tasks.
+
+The main contributions from this paper are:
+\begin{itemize}
+  \item \fullrepname (\abvrepname), a method for representing binary trees in vector space as sparse tensors. (\S\ref{sec:sdtm-sparse-tpr})
+  \item Bit-Shift Operating --- systematic and parallelized tree operations for \abvrepname. (\S\ref{sec:sdtm-diff-tree-ops})
+  \item The introduction of Sparse Differentiable Tree Machine (\sdtm), architectural improvements to the \dtm to leverage \abvrepname and drastically reduce parameter and memory usage. (\S\ref{sec:sdtm-dtm-modifications})
+  \item Techniques to apply \dtm to seq2seq tasks by converting sequences into trees. (\S\ref{sec:sdtm-seq2tree})
+  \item Empirical comparisons between \sdtm and various baselines showing \sdtm's strong generalization across a wide variety of tasks. (\S\ref{sec:sdtm-results})
+  %\item Ablation experiments to support our architectural decisions. (\paul{TODO on section})
+\end{itemize}
+
+\section{Related Work}
+Work leveraging the generalizability of tree structures has a long history across Computer Science, Linguistics, and Cognitive Science \citep{chomsky_aspects_1965,mccarthy1960recursive, sakai1961syntax,  Smolensky1990TensorPV, steedman1987combinatory}. Much of classical NLP aims to extract structured representations from text like constituency or dependency parses \citep[for overview:][]{cuetos2013parsing, lopez2008statistical}. More recent work has shown the representations learned by sequence-to-sequence models without structural supervision can recover constituency, dependency, and part of speech information from latent representations in machine translation and language models \citep{belinkov2019analysis, blevins2018deep}. While those analyses show structural information is encoded, they stop short of showing that the representations themselves are tree-structured. Analyses inspired by Tensor Product Representations \citep{mccoy2018rnns, soulos2019discovering} and chart parsing \citep{murty2022characterizing} give an account of how representations become somewhat tree-structured over the course of training.% In particular correlating out-of-distribution performance with prevalence of structure.
+
+Despite the apparent emergence of semi-structured representations in Transformers and LSTMs, these architectures still appear to struggle with the kinds of structural generalization that come easily to humans \citep{Lake_2018_GeneralizationSystematicityCompositional, kim_cogs_2020, keysers2020measuring}. A variety of approaches try to tackle this problem through meta-learning \citep{lake2019compositional, conklin2021meta}, data augmentation \citep{andreas_good-enough_2020}, or decomposing the task into separate parts \citep{ russin2019compositional, lindemann2023compositional}. The Relative-Universal Transformer \citep{csordas-etal-2021-devil} combines relative positional embeddings with a recurrent component, in an effort to emphasize local structures while allowing for unbounded computation.
+
+%While in some cases effective these methods often have in-built costs in terms of training time, memory use, or domain generality - sometimes only working a small subset of tasks.
 
 
-\subsubsection{Data analysis}
-\blindtext
+
+Explicitly tree structured network architectures have been introduced for RNNs \citep{socher-etal-2012-semantic}, LSTMs \citep{tai2015improved, dong2016language}, and Transformers \citep{wang2019tree, shiv2019novel}. However, these variants often do not outperform their unstructured counterpart on out-of-distribution challenges \citep{Soulos_2023_DifferentiableTreeOperations}. This may be because generalization requires both structured representations and operations that respect that structure. A separate line of work considers neural architectures that are used to parameterize components of a symbolic system \cite{kim2019compound, chen2020compositional} or fuzzy/probabilistic logic \citep{ijcai2020p243,BADREDDINE2022103649,Winters_Marra_Manhaeve_Raedt_2022, pmlr-v216-de-smet23a}. Similar to how vectors are embedded in trees in our work, some work  embeds vectors within logical systems \citep{rocktaschel-riedel-2016-learning, NEURIPS2023_bf215fa7}. Logic approaches to structure learning are also an active area of research \citep{Muggleton_1991_InductiveLogicProgramming, Shindo_Nishino_Yamamoto_2021}. Other approaches leverage explicit stack operations \citep{dusell2024stack, grefenstette2015learning, joulin2015inferring, yogatama2018memory}. NQG from \citet{shaw-etal-2021-compositional} combines the outputs from neural and symbolic models by inducing a grammar, but deferring to T5 \citep{t5} when that grammar fails. However the grammar's induction method has polynomial complexity with both dataset size and sequence length, which limits its application to larger tasks.
+
+%Work that has neural components but a symbolic core: NQG (Compositional generalization and natural language variation: our model can handle both), Kim's NQCFG, The Nye work on program synthesis for SCAN, Neural symbolic stack machines.
+
+%Meta-learning/auxiliary task and data augmentation (only works for lexical) approaches to compositionality.
+
+%Work interpreting trees in neural networks (hewitt, murty, Tom's thesis, etc)
+
+%Trees in neural networks (TreeRNN, TreeLSTM, Tree Transformer) can represent tree information, but don't have a way to modify trees with symbolic operations. TreeRNNs compress the tree, which makes it difficult to reconstruct the tree and perform systematic operations. For instance, we would want the encoding for a large tree passed through a left child operation to match the encoding of the left subchild built from the bottom up.
+
+%Superposition Stacks function similar to our new sparse implicit method (cite joulin, gref, yogatama, dusell).
+
+%Most similar to our work is that of \citet{Soulos_2023_DifferentiableTreeOperations}. In that work, trees are also represented in vector space and differentiable tree operations are derived.  However, they only apply their technique on Tree2Tree tasks, and their technique has limitations which make it computationally expensive. We show how to extend their approach to solve Seq2Tree and Seq2Seq tasks, and we also propose theoretical and applied changes to drastically improve the memory efficiency of their technique.
+
+Vector Symbolic Architectures (VSAs) implement symbolic algorithms while leveraging high dimensional spaces \citep{plate, gayler2003vsa_jackendoff, kanerva2009hyperdimensional, kleyko2022}. VSAs are similar to uniform neurosymbolic approaches, although VSAs commonly lack a learning component. Our work extends that of \citet{Soulos_2023_DifferentiableTreeOperations} which can be viewed as integrating Deep Learning and VSAs. They introduce the Differentiable Tree Machine for Tree-to-Tree transduction. Here we instantiate a sparse Sequence-to-Sequence version with far fewer parameters and improved memory efficiency.
+
+%The representation schema we use that enables this efficiency is similar to that of superposition stacks \cite{dusell2021learning}, though designed for tree-structures.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\linewidth]{images/sdtm/sparse_coordinate_tree.pdf}
+    \caption{An example representation using \fullrepname (\abvrepname). The values are N-dimensional vectors, and the tree positional indices are integer representations of positions in the tree. The absent child nodes of "The" (indices 4 and 6) are skipped with \abvrepname.}
+    \label{fig:sparse-tpr}
+\end{figure}
+
+\section{Differentiable Tree Operations Over \fullrepname}
+Representing trees in vector space enables us to perform differentiable structural operations on them. 
+%However, before we can define the  operations, we need a representational format for embedding trees in vector space. 
+\citet{Soulos_2023_DifferentiableTreeOperations} used Tensor Product Representations (TPRs) \citep{Smolensky1990TensorPV} for this purpose. TPRs use the tensor (or outer) product to represent trees in vector space (\S\ref{sec:sdtm-appendix-sparse-tprs}). Use of an outer product leads to a representation dimensionality that is multiplicative with both the embedding dimensionality and the number of possible tree nodes. Additionally, the number of nodes is itself an exponential function of the supported depth. This makes TPRs difficult to use in practice, given available memory is quickly exceeded as tree depth increases.
+
+In this section, we introduce \fullrepname (\abvrepname), a new schema for representing trees in vector space. We then define a library of parallelized tree operations and how to perform these operations on \abvrepname.
+
+\subsection{\fullrepname (\abvrepname)} 
+\label{sec:sdtm-sparse-tpr}
+Like TPRs, we want an encoding for trees that factorizes the representation into subspaces for \emph{structure} and \emph{content} respectively. This approach to representational spaces differs from models like an RNN and Transformer, which represent structure and content jointly in an unfactorized manner.
+%many of today's popular neural networks which learn representations in an unfactorized manner. 
+By separating the structure and content subspaces a priori, we can operate over these two spaces independently. This decision is motivated by the fact that distinct treatment of these spaces is an essential aspect of compositionality.
+
+We derive our tree representation scheme from the sparse coordinate list (COO) format. COO stores tensor data in tuples of (indices [integers], values [any format], size [integers]). The indices are N-dimensional to simulate a tensor of arbitrary shape (e.g. including dimensions such as batch or length). When an index is not indicated in indices, it is assumed that the corresponding value is 0.
+
+We give structural meaning to COO representations by defining one dimension of indices as the tree position occupied by a value vector. Our tree addressing scheme is based on Gorn addresses \citep{gorn+1967+77+115}: to get the tree position from an index, convert the index to binary and read from right to left. A left-branch is indicated by a $0$ and a right branch by a $1$. To distinguish between leading $0$s and left-branches (e.g. $010$ vs $10$), we start our addressing scheme at $1$ instead of $0$. This indicates that all $0$s to the left of the most-significant $1$ are unfilled and not left-branches. 
+Figure \ref{fig:sparse-tpr} shows an example encoding of a tree with this approach. \abvrepname can be viewed as a TPR with certain constraints, and Section \ref{sec:sdtm-appendix-sparse-tprs} defines this equivalence and formally describes the memory savings.
+
+Section \ref{sec:sdtm-previous-dtm-comparison} discusses the performance, memory, and parameter comparison between \dtm models which use standard TPRs and \abvrepname.
+
+\subsection{Differentiable Tree Operations} \label{sec:sdtm-diff-tree-ops}
+
+To operate on the trees defined in the previous section, we need a set of functions. We use a small library of only three: left-child (\leftcommand), right-child (\rightcommand), and \textbf{cons}truct (\cons) a new tree from a left and right subtree.\footnote{In LISP and expert systems literature, \leftcommand is referred to as \car, and \rightcommand is referred to as \cdr.} Although these three functions are simple, along with the control operations of conditional branching and equality-checking, these five functions are Turing complete \citep{mccarthy1960recursive}.
+
+In addition to saving memory, \abvrepname also provides a more efficient method for performing differentiable tree operations. The operations defined in \citet{Soulos_2023_DifferentiableTreeOperations} require precomputing, storing, and applying linear transformations for \leftcommand, \rightcommand, and \cons. Since our values and tree positional indices are kept separate, we can compute the results of \leftcommand, \rightcommand, and \cons dramatically more efficiently using indexing, bit-shifts, and addition.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\linewidth]{images/sdtm/left_and_right.pdf}
+    \caption{Left: Performing \leftcommand (orange) and \rightcommand (blue). Right: visualizing the \leftcommand transformation which results in DP being placed at the root. Tree positional indices of $0$ and their corresponding values are discarded.}
+    \label{fig:sparse-operations}
+\end{figure}
+
+Figure \ref{fig:sparse-operations} shows how we can perform \leftcommand directly on \abvrepname. \leftcommand is performed by indexing the even indices (i.e. those with a 0 in the least significant bit, which targets all of the nodes left of the root) and their corresponding values, then performing a right bit-shift on the indices. \rightcommand is symmetrical, except that we index for the odd positional indices and ignore position 1 in order to remove the previous root node. \cons is performed by left bit-shifting the positional indices from the left- and right-subtree arguments, then adding 1 to the newly shifted indices for the right argument. A new value $s$ can be provided for the root node.
+
+
+Our network also needs to learn a \textit{program} over multiple operations differentiably. This involves the aforementioned structured operations, as well as differentiable selection of which operation to perform and on which trees. We take weighted sums over the three operations \leftcommand, \rightcommand, and \cons, as well as over potential trees. Specific details are discussed in the next section. The result of our weighted sum is coalesced, which removes duplicate positional indices by summing together all of the values that share a specific index. 
+Formally, define the trees over which to perform \leftcommand \ $T_{L}$, \rightcommand \ $T_{R}$, and \cons \ $T_{CL}$ \& $T_{CR}$; $\vec{T}=[T_{L};T_{R};T_{CL};T_{CR}]$. We  also take a new value $s \in \mathbb{R}^{d}$ to be inserted ($\otimes$) at the new root node of the \cons operation, and a vector of operation weights $\vec{w} = (w_L,  w_R, w_C)$ which sum to 1.
+
+\begin{equation} \label{eq:output}
+O(\vec{w}, \vec{T}, s) = w_L \leftcommand(T_{L}) + w_R \rightcommand(T_{R}) + w_C ( \cons(T_{CL}, T_{CR}) +  s \otimes r_{1})
+\end{equation}
+
+\section{The Sparse Differentiable Tree Machine (\sdtm)}
+\label{sec:sdtm-dtm-modifications}
+
+Our work extends the Differentiable Tree Machine (\dtm) introduced in \citet{Soulos_2023_DifferentiableTreeOperations} with the Sparse Differentiable Tree Machine (\sdtm). While similar to the original at a computational level, \sdtm represents a different implementation of these concepts that make it dramatically more parameter and memory efficient. We also introduce techniques to apply \sdtm to tasks with sequence input and output (seq2seq). 
+
+\subsection{Overview} \label{sec:sdtm-dtm_sparse}
+\begin{wrapfigure}{r}{0.45\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{images/sdtm/dtm-shrink.pdf}
+    \caption{A schematic of how the three core components of the \dtm (agent, interpreter, and memory) relate to each other. Adapted from \citet{Soulos_2023_DifferentiableTreeOperations}.}
+    \label{fig:dtm}
+\end{wrapfigure}
+
+\sdtm uses our \fullrepname schema across its components. Like the original \dtm, our model is comprised of an agent, interpreter, and memory (illustrated in Figure \ref{fig:dtm}). The Interpreter performs Equation \ref{eq:output} by applying the bit-shifting tree operations from Section \ref{sec:sdtm-diff-tree-ops} and weighting the result. The output from the interpreter is written to the next available memory slot, and the last memory slot is taken as the output.
+
+The Agent is a Transformer encoder that takes an encoding of the memory as input and produces the inputs for Equation \ref{eq:output}: $\vec{w}$, $\vec{T}$, and $s$. Two special tokens, <OP> and <ROOT>, are fed into the Agent to represent $\vec{w}$ and $s$. Each time a tree is written to memory, a fixed-dimensional encoding of that tree is produced and fed as a new token to the agent (\S \ref{sec:sdtm-mha}). The agent soft-selects tree arguments for the interpreter, $\vec{T}$, by performing a weighted sum over the trees in memory. Figure \ref{fig:agent} in the Appendix contains a detailed diagram showing the flow of information for one layer of \sdtm.
+
+The agent which implicitly parameterizes the conditional branching and control flow of the program is modeled by a Transformer, and it is possible for \sdtm to face some of the generalization pitfalls that plague Transformers. The design of \sdtm encourages compositional generalization through differentiable programs, but it does not strictly enforce the constraints of classical symbolic programs. As the results in Section \ref{sec:sdtm-results} show, \sdtm can learn generalizable solutions to some tasks despite the presence of a Transformer, but on some other tasks the issues with generalization are still present. 
+
+\subsection{Pooling by attention} \label{sec:sdtm-mha}
+
+Each tree in memory needs to have a fixed-dimensional encoding to feed into the agent regardless of how many nodes are filled. Commonly this is done via pooling, like taking the means of the elements in the tree, or a linear transformation in the case of the original \dtm. Instead, we use Pooling by Multi-headed Attention (PMA) \citep{pmlr-v97-lee19d}, which performs a weighted sum over the elements, where the weight is derived based on query-key attention.
+
+Attention is permutation invariant to the ordering of key and value vectors, but it is important that our pooling considers tree position information. To enforce this, we convert the position indices to their binary vector representation $\vec{b}$. This leads to an asymmetrical vector with only positive values, so instead we represent left branches as $-1$ and keep right branches as $+1$. For example, position $5 \rightarrow [0,0,0,0,0,1,0,1] \rightarrow [0,0,0,0,0,1,-1,1]$. The input to our pooling function is the concatenation of this positional encoding $\vec{b}$ with the token embedding $\vec{x}$ at that position: $[\vec{x};\vec{b}]$. This method for integrating token and node position is similar to tree positional encoding from \citet{NEURIPS2019_6e091746}, except that we use concatenation and a linear transformation to mix the content and position information instead of addition.
+
+Unlike standard self attention, we use a separate learnable parameter for our query vector $\vec{q} \in \mathbb{R}^{\text{num\_heads}\times\text{key\_dim}}$. We pass $[\vec{x};\vec{b}]$ through linear transformations to generate keys $\vec{k} \in \mathbb{R}^{\text{num\_heads}\times\text{key\_dim}}$ and values $\vec{v} \in \mathbb{R}^{\text{num\_heads}\times\text{value\_dim}}$. The result of this computation is always $z \in \mathbb{R}^{\text{num\_heads}\times\text{value\_dim}}$ given that $\vec{q}$ is fixed and does not depend on the input. The rest of the computation is identical to a Transformer with pre-layer normalization \citep{xiong2020layer}.
+
+\subsection{Tree Pruning} \label{sec:sdtm-pruning}
+While \fullrepname mean that trees with fewer filled nodes take up less memory, the way our model blends operations results in trees becoming dense.
+%Our sparse tree representation works well when the trees themselves are sparse.
+The interpreter returns a blend of all three operations at each step, including the \cons operation which increases the size of the representation by combining two trees. In practice even as the entropy of the blending distribution drops, the probability of any operation never becomes fully 0. This means that over many steps, trees start to become dense due to repeated use of \cons. In order to keep our trees sparse, we use pruning: only keeping the top-$k$ nodes as measured by magnitude. $k$ is a hyper-parameter that can be set along with the batch size depending on available memory. 
+
+\subsection{Lexical Regularization} \label{sec:sdtm-lex-reg}
+To aid lexical generalization, we add noise to our token embeddings. Before feeding an embedded batch into the model, we sample from a multi-variate standard normal for each position in each tree, adding the noise to the embeddings as a form of regularization \citep{bishop-noise}. Ablation results showing the importance of this regularization are available in Appendix \ref{sec:sdtm-lex-reg-ablation}. %Particularly on low-resource tasks, with a small input vocabulary --- like SCAN --- this regularisation proves essential. We believe this kind of regularisation forces the model to use a larger subspace to represent each token, which makes token representations more resilient to the kinds of novel contextualisations posed by lexical generalisation challenges. This approach to lexical regularisation can be easily applied to most models, and may improve generalisation in low-resource settings. 
+
+%We find this regularization essential for lexical generalization as shown in \paul{TODO! Probably a table in the appendix}. We sample the noise from a standard normal distribution.
+
+\subsection{Handling Sequential Inputs and Outputs}\label{sec:sdtm-seq2tree}
+\paragraph{seq2tree} The original \dtm can only be applied to tasks where a tree structure is known for both inputs and outputs. Here we provide an extension to allow \dtm to process sequence inputs. To do this we treat each input token as a tree with only the root node occupied by the token embedding. We then initialize the tree memory with $N$ trees, one for each token in the input sequence. Figure \ref{fig:root-and-laud} left depicts the initial memory state for a sequence. The agent's attention mechanism is permutation-invariant, so in order to distinguish between two sequences which contain the same tokens but in different orders, we apply random sinusoidal positional encodings to the first $N$ tokens passed to the agent \citep{li2023representations, ruoss-etal-2023-randomized}. Random positional encodings sample a set of increasing integers from left-to-right instead of assigning a fixed position to each token. The purpose of \leftcommand and \rightcommand is to extract subtrees. Since in our seq2tree setting the input sequence is processed in a completely bottom-up manner, we restrict the agent and interpreter to only have a single operation: \cons. Use of a single operation to construct new trees from subtrees aligns the \dtm theoretically with the Minimalist Program \citep{10.7551/mitpress/9780262527347.001.0001}, which addresses natural language's compositionality in terms of a single operation: merge.
+\paragraph{seq2seq} To handle sequence inputs and outputs we convert the output sequence to a tree. One method to convert the output sequence into a tree is to use a parser. Alternatively, when a parser is not available, we can embed a sequence as the \textbf{l}eft-\textbf{a}ligned leaves at \textbf{u}niform \textbf{d}epth (LAUD). Figure \ref{fig:root-and-laud} right shows how an output sequence can be embedded using LAUD. Since all of the non-terminal nodes are the same, we can hardcode the root argument to \cons. We insert a special token <EOB> to signify the end of a branch, similar to an <EOS> token.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\linewidth]{images/sdtm/root_nodes_and_laud.pdf}
+    \caption{Left: The memory state is initialized as a sequence of trees where only the root node contains a token. Right: An output sequence is embedded in a tree using the left-aligned uniform-depth (LAUD) scheme. <NT> and <EOB> are special tokens not in the original output sequence.}
+    \label{fig:root-and-laud}
+\end{figure}
+
+\section{Results} \label{sec:sdtm-results}
+
+\subsection{Baselines}
+We consider models that are trained from scratch on the datasets they're evaluated on; while the compositional capabilities of large pre-trained models are under active debate \citep{kim2022uncontrolled}, we are interested in the compositional abilities of the underlying architecture --- rather than those that may result from a pre-training objective.
+%believe that there is a benefit in developing models that learn from exposure to a single task. \paul{Other reasons to consider only models exposed to a task are for building human-like intelligence which isn't exposed to mass data as well as computing costs.} 
+We compare \sdtm to two fully neural models, a standard Transformer \citep{vaswani2017attention} as well as a relative universal Transformer (RU-Transformer) which was previously shown to improve systematic generalization on a variety of tasks \citep{csordas-etal-2021-devil}. We also compare our model to a hybrid neurosymbolic system, NQG \citep{shaw-etal-2021-compositional, Sun_2023_ReplicationStudyCompositional}, a model which uses a neural network to learn a quasi-synchronous context-free grammar \citep{smith-eisner-2006-quasi}. NQG was introduced alongside NQG-T5, which is a modular system that uses NQG when the grammar produces an answer and falls back to a fine-tuned large language model T5 \citep{t5}. As mentioned at the beginning of this section, we only compare to NQG in this paper since we want to evaluate models that have not undergone significant pre-training.\footnote{NQG uses pre-trained BERT embeddings \citep{devlin_bert_2019}; it is unknown how much this pre-training helps the method.} Details related to data preprocessing (\S\ref{sec:sdtm-data-preprocessing}), model training (\S\ref{sec:sdtm-dtm-training}, \S\ref{sec:sdtm-baseline-training}), compute resources (\S\ref{sec:sdtm-compute-resources}), and dataset details (\S\ref{sec:sdtm-data-stats-samples}) are available in the Appendix. For all datasets, the reported results are the best exact match accuracies on the test set over five random seeds. Additional data on means and standard deviations across the five runs are shown in Section \ref{sec:sdtm-statistics}.
+
+For each task, we test whether models generalize to samples drawn from various data distributions. Independent and identically distributed (\textbf{IID}) samples are drawn from a distribution shared with training data. We evaluate several out-of-distribution (OOD) shifts. \textbf{One-shot} lexical samples, while drawn from the same distribution as the training data, contain a word that was only seen in a single training sample. Similarly, \textbf{Zero-shot} lexical samples are those where the model is not exposed to a word at all during training. \textbf{Structural/length} generalization tests whether models can generalize to longer sequences (length) or nodes not encountered during training (structural). \textbf{Template} generalization withholds an abstract n-gram sequence during training, and then each test sample fits the template. Finally, maximum compound divergence (\textbf{MCD}) generates train and test sets with identical uni-gram distributions but maximally divergent n-grams frequencies \citep{keysers2020measuring}. Although models are often tested on a single type of generalization, we believe evaluating a model across a broad array of distributional shifts is essential for characterizing the robustness of its generalization performance.
+
+\begin{table}
+  \caption{\textbf{Active$\leftrightarrow$Logical accuracy.} Results are the best performance over five runs. The test sets are divided into IID, and OOD sets 0-shot lexical and structural. Parameter and memory usage is shown for the original \dtm with TPRs and our proposed sparse \dtm with and without pruning. Our modifications reduce the parameter count by almost two orders of magnitude. $^\ast$NQG was trained on a seq2seq version without parantheses because it was not able to learn the tree2tree training set.}
+  \label{tab:activelogical}
+  \centering
+  \begin{tabular}{lllllll}
+    \toprule
+    Model & \multicolumn{3}{c}{Split}         \\
+    \cmidrule(r){2-4}
+    & IID & \begin{tabular}[c]{@{}l@{}}0-Shot \\ Lexical\end{tabular} & Structural \\
+    \cmidrule(r){1-4}
+    Transformer    & $1.0$ & $0.0$ & $0.0$ \\
+    RU-Transformer & $1.0$ & $0.0$ & $.12$ \\
+    NQG$^\ast$            & $.45$ & $0.0$ & $0.0$ \\
+    \midrule
+    & & & & Parameters & Memory (GB) & \begin{tabular}[c]{@{}l@{}}Relative \\ Speed\end{tabular} \\
+    \midrule
+    Original \dtm  & $1.0$ & $1.0$ & $1.0$ & 72M & 12.3 & 34  \\ 
+    \sdtm  & $1.0$ & $1.0$ & $1.0$ & 1M & 9.7 & 2.5     \\
+    \sdtm (pruned k=1024) & $1.0$ & $1.0$ & $.95$ & 1M & 1.8 & 1 \\
+    \bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Performance Regression (Active$\leftrightarrow$Logical)} \label{sec:sdtm-previous-dtm-comparison}
+Active$\leftrightarrow$Logical is a tree2tree task containing input and output trees in active voice and logical forms \citep{Soulos_2023_DifferentiableTreeOperations}. Transforming a tree in active voice to its logical form simulates semantic parsing, and transforming a logical form tree to active voice simulates natural language generation. For this dataset, there are three test sets: IID, 0-shot lexical, and structural. In addition to the baselines listed in the previous section, we also compare our modified \sdtm to the original \dtm. This enables us to confirm that our proposed changes to decrease parameter count and memory usage while increasing inference speed does not lead to a performance regression. The results are show in Table \ref{tab:activelogical}.
+
+The various \dtm models and Transformers all perform perfectly on the IID test set. NQG struggles to learn the Active$\leftrightarrow$Logical task, an example of the brittleness of hybrid neurosymbolic systems. Only the \dtm variants succeed on the OOD test sets. As anticipated, the RU-Transformer performs better than the standard Transformer with regards to structural generalization.
+
+Comparing the original \dtm to \sdtm without pruning, we see a 70x reduction in parameter count from pooling by attention, a 20\% reduction in memory usage from fewer parameters and \abvrepname, as well as a roughly 13x speedup. We are able to gain even further memory savings and speed improvements due to the pruning method. The final two rows show that the pruning method has no impact on lexical generalization and a minor impact on structural generalization, while reducing memory usage by 5x and improving speed by 2.5x. The results from this experiment confirm that \sdtm is capable of matching \dtm performance on a previous baseline. However, since both \dtm and \sdtm perform near ceiling, it is difficult to isolate the effect of the proposed changes in this paper. We will investigate this question further in Section \ref{sec:sdtm-scan}. Next, we turn to tasks where the original \dtm could not be used.
+
+\subsection{Scalability (FOR2LAM)}
+FOR2LAM is a tree2tree program translation task to translate an abstract syntax tree (AST) in an imperative language (FOR) to an AST in a functional language (LAM) \citep{NEURIPS2018_d759175d}. Due to the depth of the trees in this dataset, \dtm is unable to fit a batch size of 1 into memory. This makes FOR2LAM a good dataset to test the scalability of \sdtm to more complex samples. We augment the FOR2LAM dataset with a 0-shot lexical test set. During training, only two variable names appear: `x' and `y'. For the 0-shot test, we replace all occurrences of x in the test set with a new token `z'. We are unable to test \dtm on FOR2LAM because a batch size of 1 does not fit into memory due to the depth of the trees in the dataset.
+
+
+Results on FOR2LAM are shown on the left side of Table \ref{tab:for2lam_geoquery}. NQG suffers with scale (see \ref{sec:sdtm-baseline-training}), and we were unable to include results for it on FOR2LAM due to training and evaluation exceeding 7 days. All other models do well on the in-distribution test set, but only \dtm is able to achieve substantive accuracy on the 0-shot lexical test. \dtm's performance is impressive given work on data augmentation has shown the difficulty of few-shot generalization is inversely proportional to vocabulary size \citep{patel2022revisiting}, with smaller vocabulary tasks being more challenging. This 0-shot challenge is from 2 variables (x, y) to 3 (x, y, z), making it difficult enough that both transformer variants score 3\%.
+
+\subsection{Seq2Tree (GeoQuery)}
+
+\begin{table}
+\caption{\textbf{Accuracies on FOR2LAM and GeoQuery.} Results are the best performance over five runs. NQG cannot be evaluated on FOR2LAM because it takes over a week to train. $^\dag$Results taken from \citet{shaw-etal-2021-compositional}. $^\ast$We report the results from a replication study of NQG where the result on the Length split differed substantially from the original result \citep{Sun_2023_ReplicationStudyCompositional}.}
+\centering
+\begin{tabular}{lcccccc}
+\toprule
+& \multicolumn{2}{c}{\textbf{FOR2LAM}} & \multicolumn{4}{c}{\textbf{GeoQuery}} \\
+\cmidrule(r){2-3} \cmidrule(l){4-7}
+Model & IID & 0-shot lexical & IID & Length & Template & TMCD \\
+\midrule
+Transformer & 1.0 & .03 & .88 & .26 & .79 & .40 \\
+RU-Transformer & 1.0 & .03 & .87 & .25 & .77 & .37 \\
+NQG$^\dag$ & -- & -- & .76 & .37/.26$^\ast$ & .62 & .41 \\
+\midrule
+\sdtm & 1.0 & .61 & .73 & .20 & .20 & .36 \\
+\bottomrule
+\end{tabular}
+\label{tab:for2lam_geoquery}
+\end{table}
+
+GeoQuery is a natural language to SQL dataset \citep{zelle1996learning} where a model needs to map a question stated in natural language to a correctly formatted SQL query, including parentheses to mark functions and arguments. We use the parentheses and function argument relationship as the tree structure for our output. In this format, GeoQuery is a seq2tree task, and we follow the description from Section \ref{sec:sdtm-seq2tree}.  We use the same preprocessing and data as \citet{shaw-etal-2021-compositional}. The TMCD split for GeoQuery \citep{shaw-etal-2021-compositional} extends MCD to natural language datasets instead of synthetic languages. GeoQuery is a very small dataset, with a training set containing between 440 and 600 samples, depending on the split. Like FOR2LAM, we are unable to test \dtm on GeoQuery because a batch size of 1 does not fit into memory due to the depth of the trees in the dataset.
+
+
+Results for GeoQuery are shown on the right side of Table \ref{tab:for2lam_geoquery}. This is the most difficult task that we test because of the small training set, and the natural language input is not draw from a synthetic grammar. Given this, a potential symbolic solution to this task might be quite complex. We find that both NQG and \dtm perform worse than the two Transformer variants on the IID test set. This also holds true for the Template split, where Transformers outperform the neurosymbolic models. On the Length and TMCD splits, all of the baselines achieve roughly the same performance while \dtm performs slightly worse --- the degree of variation in the input space and small training set appear to make it difficult for \sdtm to find a compositional solution. 
+
+It is worth noting that there is substantial room for improvement across every model on GeoQuery. The small dataset with high variation poses a problem for both compositional methods of \sdtm and NQG. It is possible that with sufficient data, GeoQuery's latent compositional structure could be identified by NQG and DTM, but the released GeoQuery dataset has only on the order of 500 training examples. Given all methods struggle to model the IID split, we refrain from drawing substantive conclusions based on minor differences in accuracy on this single task in isolation from the rest of the results. 
+
+%\paul{Can we justify this performance a bit?}
+
+\subsection{Seq2Seq (SCAN)} \label{sec:sdtm-scan}
+SCAN is a synthetic seq2seq task with training and test variations to examine out-of-distribution generalization \citep{Lake_2018_GeneralizationSystematicityCompositional}. To process seq2seq samples, we follow the description in Section \ref{sec:sdtm-seq2tree}. We compare two methods for embedding the output sequence into a tree by writing a parser for SCAN's output and comparing this to the left-aligned uniform-depth trees (LAUD). In addition to the standard test splits from SCAN, we introduce a 0-shot lexical test set as well.
+
+\begin{table}
+  \caption{\textbf{SCAN accuracy.} Results are the best performance over five runs. MCD scores are calculated as the average of the three MCD splits. $^\dag$Results from \citet{shaw-etal-2021-compositional}. $^\ast$Results from \citet{Sun_2023_ReplicationStudyCompositional}.}
+  \label{tab:scan}
+  \centering
+  \begin{tabular}{lllllll}
+    \toprule
+    Model & \multicolumn{6}{c}{Split}         \\
+    \cmidrule(r){2-7}
+    & IID & 1-shot lexical & 0-shot lexical & Length & Template & MCD \\
+    \midrule
+    Transformer & 1.0 & .08 & 0.0 & .07 & 1.0 & .02 \\
+    RU-Transformer & 1.0 & .11 & 0.0 & .19 & 1.0 & .01 \\
+    NQG$^\dag$ & 1.0$^\ast$ & 1.0 & 0.0 & 1.0 & 0.0$^\ast$ & 1.0     \\
+    \midrule
+    \sdtm (parse trees)     & 1.0   & .99 & .99 & .75 & .95 & .03  \\
+    \sdtm (LAUD trees) & 1.0 & .87 & .98 & .06 & .98 & 0.0 \\
+    \dtm (parse trees) & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 \\
+    \bottomrule
+\end{tabular}
+\end{table}
+
+Since the trees in SCAN are not very deep, we are able to compare \sdtm to \dtm to isolate the effect of pooling by attention (\S\ref{sec:sdtm-mha}). We modify the original \dtm to handle sequential inputs and outputs as described in Section \ref{sec:sdtm-seq2tree}. Replacing the linear transformation in \dtm with pooling by attention in \sdtm leads to drastically better results; \dtm is unable to perform well even on the simple IID split, whereas \sdtm performs well across many of the splits.
+
+All baselines perform well on the IID test set, showing that they have learned the training distribution well. Transformer variants perform poorly on lexical, length, and MCD splits. 
+%The RU-Transformer does better than the standard Transformer on the length split, but \citet{csordas-etal-2021-devil} showed that the RU-Transformer needs an easier length shift to increase its performance more.
+The Transformers and \sdtm perform well on the Template split while NQG completely fails. Along with the results from GeoQuery, which showed weak \sdtm performance on the Template split and strong performance from both Transformers, it seems that the Transformer architecture is robust under template shifts between training and testing. \sdtm is the only model to perform well on the 0-shot lexical test set, whereas NQG is the only model able to perform well on the MCD test set. The two \sdtm rows compare models trained with output trees from a parser or LAUD encoding. The main performance difference is on the Length split, where the structurally relevant information in the parse trees is necessary for \sdtm to perform well. It is not necessary to have structured input for the model to perform well on length generalization as long as the output is structured.
+
+\section{Conclusions} \label{sec:sdtm-conclusion}
+We introduced the Sparse Differentiable Tree Machine (\sdtm) and a novel schema for efficiently representing trees in vector space: \fullrepname (\abvrepname).
+Unlike the fully neural and hybrid neurosymbolic baselines presented here, \sdtm takes a unified approach whereby symbolic operations occur in vector space. While not perfect --- \sdtm struggles with MCD and Template shifts, as well as the extremely small GeoQuery dataset --- the model generalizes robustly across the \textit{widest variety} of distributional shifts. \sdtm is also uniquely capable of zero-shot lexical generalization, likely enabled by its factorization of content and structure.
+
+While these capacities for generalization are shared with the original \dtm, our instantiation is computationally efficient (representing a 75x reduction in parameters) and can be applied to seq2seq, seq2tree, and tree2tree tasks. Our work reaffirms the ability of neurosymbolic approaches to bridge the flexibility of connectionist models with the generalization of symbolic systems. We believe continued focus on efficient neurosymbolic implementations can lead to architectures with the kinds of robust generalization, scalability, and flexibility characteristic of human intelligence.
