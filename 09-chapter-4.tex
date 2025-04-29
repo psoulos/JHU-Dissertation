@@ -1,23 +1,168 @@
-\chapter{A long chapter title test the distance to the quote} \label{chap:chap-4}
+\definecolor{pink}{rgb}{0.8549019607843137, 0.5450980392156862, 0.7647058823529411}
+
+\chapter{Recurrent Transformers Trade-off Parallelism for Length Generalization on Regular Languages} \label{chap:chap-4}
 
 
-\begin{singlespace}
-    \epigraph{This is a large quote placed with \\ 
-    single spacing over two lines}{-- Unknown Author}
-\end{singlespace}
-
+\begin{singlespace}         % you can also use `onehalfspace` to relax the spacing
+    This chapter is reprinted from \fullcite{soulos2024recurrent}. Licensed under CC BY 4.0.
+\end{singlespace} 
 
 %% remove the following and add your chapter text here
-\section{A long section heading to test the distance before this}
-
-\blindtext
-
-\begin{figure}[ht]
-\begin{center}
-    \includegraphics[width=\textwidth, trim={6cm 5cm 6cm 5cm},clip,page=1] {chap4.pdf}
-    \caption{Here are some photos of ducks to make you feel happy in tough times.}
-    \label{fig:ducks}
-\end{center}
-\end{figure}
-
-\Blindtext[2]
+\begin{abstract}
+    Transformers have achieved remarkable success in Natural Language Processing but struggle with state tracking and algorithmic reasoning tasks, such as modeling Regular Languages. In contrast, Recurrent Neural Networks (RNNs) exhibit perfect generalization modeling Regular Languages. To bridge this gap, we explore Recurrent Transformer variants that incorporate chunking, balancing the parallelizability of Transformers with the sequential processing of RNNs. We identify layer-recurrence as the key type of recurrence that allows Recurrent Transformers to succeed in modeling Regular Languages. Further analysis indicates a rapid decline in generalization performance as chunk size increases beyond two, though with an exponential decrease in training time. This study underscores the critical role of layer-recurrence and chunk size in Recurrent Transformers, highlighting the trade-off between generalization capabilities and parallelism. Code available at \url{https://github.com/IBM/recurrent-chunked-models-regular-languages}.%While small chunk sizes improve the ability of Recurrent Transformers to model Regular Languages and, by extension, more complex language structures, the decrease in training speed makes it costly to train models with small chunk sizes on large datasets. Our results suggest that optimizing chunk size, enhancing the speed of Recurrent Transformers, or adding recurrence during fine-tuning are important steps for improving training Recurrent Transformers at scale. 
+    \end{abstract}
+    
+    \section{Introduction}
+    
+    \begin{wrapfigure}[16]{r}{0.5\linewidth}
+        \centering
+        \vspace{-2.5em}
+        \includegraphics[width=\linewidth]{images/recurrent/generalization_performance_talk.pdf}
+        \caption{The generalization performance of Transformers with various types of recurrence. Lengths to the left of the dashed line are in-distribution, and lengths to the right are out-of-distribution.}
+        \label{fig:results-summary}
+        \vspace{-2em}
+    \end{wrapfigure}
+    
+    Despite the remarkable success of Transformers \citep{vaswani_attention_2017} in Natural Language Processing (NLP), the architecture continues to struggle with state tracking and algorithmic reasoning \citep{hahn_theoretical_2020, bhattamishra_ability_2020, deletang_neural_2022}. The Chomsky Hierarchy \citep{chomsky_three_1956, chomsky_certain_1959} provides a framework for classifying tasks based on difficulty, and \citet{deletang_neural_2022} demonstrated that Transformers show profound weaknesses across the hierarchy.
+    
+    Regular Languages, the simplest class in the Chomsky Hierarchy, are an important benchmark for evaluating the reasoning capabilities of neural network architectures. Regular Languages can be represented using a Finite State Machine with no access to an external memory \citep{hopcroft_introduction_2006}. If an architecture fails to learn Regular Languages in a robust and generalizable way, it is unlikely that it will succeed on more challenging problems further up the hierarchy. On three out of four Regular Language tasks from \citet{deletang_neural_2022}, Transformers fail to generalize to longer samples than those encountered in the training set (see the \textcolor{pink}{pink} line in Figure \ref{fig:results-summary}). Such experimental studies are supported by theoretical results that highlight the Transformer's inability to model regular languages over arbitrary input lengths \citep{merrill_parallelism_2023, strobl_what_2024}.
+    
+    Understanding the necessary modifications to Transformers to improve their performance modeling Regular Languages is an important step in ascending the hierarchy towards mildly-context sensitive languages, which are hypothesized to encapsulate human language \citep{joshi_tree_1985, joshi_convergence_1990}. Furthermore, the modifications might shed light on important inductive biases for human-like language processing leading to improved generalization, reasoning, and sample efficiency.
+    
+    The performance of Transformers contrasts with the results from various Recurrent Neural Network (RNN) architectures, such as Simple Recurrent Networks \citep{elman_finding_1990} and Long Short-Term Memory networks \citep{hochreiter_long_1997}, both of which exhibit perfect length generalization on the same four Regular Language tasks. RNNs can track intermediate states by updating the recurrent vector that is passed forward to future tokens. For a sequence of $T$ tokens, an RNN will perform $T$ computation steps, allowing it to maintain and update a state representation at each step. In contrast, standard Transformers are non-recurrent, and a Transformer with $L$ layers will process $T$ tokens in $L$ computation steps, regardless of the sequence length. \citet{liu_transformers_2022} demonstrated that Transformers with at least $L=\text{log}(T)$ layers can learn shortcut solutions for modeling automata. While these shortcut solutions perform well in-distribution, they are brittle and fail to generalize to longer samples, revealing a limitation in the Transformers' ability to model Regular Languages effectively.
+    
+    The lack of a recurrent mechanism allows Transformers to process an entire sequence in parallel using masking and teacher forcing. However, the absence of recurrence makes generalization challenging for Transformers on certain algorithmic tasks where maintaining intermediate states would be beneficial \citep{merrill_parallelism_2023}. In a separate line of work, researchers have investigated combining Transformers with recurrent mechanisms to improve the performance in modeling long sequences \citep{hutchins_block-recurrent_2022, ding_ernie-doc_2021, bulatov_recurrent_2022} and tasks where Transformers fail \citep{ju_staircase_2022}. In this paper, we address how Recurrent Transformers affect generalization.
+    
+    \begin{figure}
+        \centering    \includegraphics[width=.7\linewidth]{images/recurrent/architectures.pdf}
+        \caption{Computation graphs for an RNN, Transformer, and Recurrent Transformer over four tokens. The boxes with the same number can be calculated in parallel, and the number indicates the sequential step of computation (for example, box 3 cannot be calculated until boxes 1 and 2 are finished). Boxes within the same chunk are highlighted in light orange and share the same number. Recurrent connections are red, and attention connections are green. The Recurrent Transformer depicted has a chunk size of 2.}
+        \label{fig:architectures}
+    \end{figure}
+    
+    Recurrent Transformer variants introduce the notion of \textit{chunking} to interpolate between the fast, parallelizable architecture of a standard Transformer and the slower, sequential architecture of RNNs. Within a chunk, all tokens are processed in parallel, while a recurrent connection is established between chunks. At the extremes, a chunk size of 1 processes inputs similarly to an RNN, whereas a chunk size equal to the maximum sequence length is equivalent to a standard Transformer. Figure \ref{fig:architectures} illustrates the computation graph and associated parallelizability for an RNN, a Transformer, and a Recurrent Transformer. It is important to note that the slowdown from adding recurrent processing to Transformers only occurs when teacher forcing is enabled, typically during training. When a standard Transformer generates tokens in an autoregressive setting, it must proceed token-by-token and has no parallelism benefits over a Recurrent Transformer.
+    
+    
+    We start by defining Token Layer Recurrence, the type of recurrence implemented by RNNs. We show that Staircase Attention \citep{ju_staircase_2022} satisfies Token Layer Recurrence at a chunk size of 1, whereas Block-Recurrent Transformer (BRT) \citep{hutchins_block-recurrent_2022} does not. We validate this finding empirically by showing that Staircase Attention generalizes well on the Regular Language tasks and BRT fails (Figure \ref{fig:results-summary}). We also define Chunk Layer Recurrence, a less restrictive version of Token Layer Recurrence, and investigate the relationship between larger chunk sizes and generalization performance. While large chunk sizes are faster and more amenable to large-scale training, we find that small chunk sizes consistently perform better for every architecture in terms of length generalization. Although models with smaller chunk sizes generalize better, we observe that these smaller chunk sizes lead to training speeds an order of magnitude slower than a standard Transformer. This work highlights the importance of either increasing the speed of Recurrent Transformers, finding the optimal chunk size for a specific task, or adding recurrence during post-training.
+    
+    The primary contributions of this paper are:
+    \begin{itemize}
+    \item Defining Token Layer Recurrence and Chunk Layer Recurrence.
+    \item Evaluating three chunk-based models, namely Staircase Attention, Block-Recurrent Transformer, and RegularGPT, on Regular Language tasks.
+    \item Identifying Staircase Attention as a Recurrent Transformer that generalizes well on the tasks and satisfies Chunk Layer Recurrence.
+    \item Investigating the relationship between chunk size and generalization performance.
+    \item Demonstrating the impact of chunk size on training speed and therefore scalability.
+    \end{itemize}
+    
+    \section{Related Work}
+    
+    \paragraph{The Chomsky Hierarchy}
+    The Chomsky Hierarchy \citep{chomsky_three_1956, chomsky_certain_1959} identifies Formal Language computations by increasing complexity based on the required grammar to model the computation. Each level of the hierarchy can be modeled by a finite state machine with access to increasingly expressive data structures. One line of research is to map Neural Network architectures to levels of the hierarchy \citep{bhattamishra_ability_2020, deletang_neural_2022, strobl_what_2024}. \citet{borenstein_what_2024} extend previous work on Regular Language recognition to Regular Language modeling by using KL Divergence between model predictions and probabilistic finite-state automata.
+    
+    \paragraph{Transformers and their limitations}
+    Standard Transformers are known to possess computational limitations due to the attention mechanism \citep{merrill_parallelism_2023, strobl_what_2024}. \citet{liu_transformers_2022} showed theoretically and empirically that Transformers are able to learn shortcuts to simulate an automata with $T$ tokens in $\text{log}(T)$ layers. The learned shortcuts are brittle and do not generalize well. \citet{chi_transformer_2023} modify a Transformer to succeed on Regular Language tasks, although their architecture has degraded performance on natural language modeling. 
+    
+    \paragraph{Recurrent Neural Networks}
+    Recurrent Neural Networks (RNNs) were developed to process sequential information, with a particular focus on language processing \citep{jordan_serial_1997, elman_finding_1990}. Two significant improvements to RNNs were the introduction of gating \citep{hochreiter_long_1997, cho_learning_2014} and attention \citep{bahdanau_neural_2015}. Researchers have investigated the computability of RNNs from a formal language perspective \citep{siegelmann_computational_1995, chen_recurrent_2018, nowak_representational_2023, svete_recurrent_2023}.
+    
+    \paragraph{Recurrent Transformers}
+    Prior work has investigated adding recurrent mechanisms into Transformers. \citet{ju_staircase_2022} introduce Staircase Attention and show improvements on entity-tracking and language modeling.  \citet{hutchins_block-recurrent_2022} and \citet{didolkar_temporal_2022} contemporaneously published Transformer architectures which use cross attention to a set of recurrent vectors to improve modeling long range sequences. \citet{bulatov_recurrent_2022} showed improvements on long range modeling by adding recurrent memory tokens to Transformers. \citet{chowdhury_investigating_2024} investigated the relationship between Transformer depth-wise recurrence and chunk-wise recurrence on various tasks.
+    
+    \paragraph{Transformer Length Generalization}
+    Since Transformers lack recurrence, positional embeddings are used to signify the order of tokens. Different types of positional embeddings can improve length generalization \citep{csordas_devil_2021, ruoss_randomized_2023, shaw_self-attention_2018, su_roformer_2024, zhou_transformers_2024, kazemnejad_impact_2023, press_train_2021}, although \citet{deletang_neural_2022} and \citet{ruoss_randomized_2023} showed that none of the positional embeddings that they tested allowed Transformers to generalize well on Regular Languages.
+    
+    \section{Architectures}
+    \begin{wrapfigure}[27]{r}{0.3\linewidth}
+        \centering
+        \vspace{-3em}
+        \includegraphics[width=\linewidth]{images/recurrent/attention patterns.pdf}
+        \caption{Attention patterns for standard attention and Staircase Attention.}
+        \label{fig:attention-patterns}
+        \vspace{-0em}
+    \end{wrapfigure}
+    
+    We briefly describe three architectures that we test. For additional details, please see the original papers. For each architectures, task, and chunk size, we run a hyperparameter search to find the best setting for that combination. We then train five randomly initialized models with the best setting and report these results. Training details for each architecture can be found in Appendix \ref{sec:recurrent-training-details}.
+    
+    The three architectures we discuss below use the notion of dividing an input sequence $X=\{X_0,\dots X_{T-1}\}$ of length $T$ into chunks $K=\{K_0,\dots K_{\lceil T/C\rceil}\}$ of size $C$ where $K_i=\{{X_{i\times C},\dots X_{(i+1)\times C - 1}}\}$. Each architecture processes chunks in different ways.
+    
+    \paragraph{Token Layer Recurrence} RNNs implement recurrence through the property that the output for a token $X_{i,l}$ at sequence position $i$ and layer $l$ depends on the output of a previous token at layer $l$: $X_{i,l}=f(X_{<i,l},\dots)\ \forall i>0$. Meanwhile, the state of token $X_{i,l}$ in a Transformer with causal attention depends only on states at $l-1$: $X_{i,l}=f(\{X_{<i,l-1}\})$. Token layer recurrence allows a network to iteratively update a state as new information is processed. For a treatment of token layer recurrence and generalization in Linear RNNs, see \citet{fan_advancing_2024} and \citet{merrill_illusion_2024}.
+    
+    \paragraph{Chunk Layer Recurrence} When the chunk size is greater than 1, the property of layer recurrence is violated. Consider a chunk size of $C=2$. $X_0$ and $X_1$ will be processed in parallel, which means that $X_{1,l}=f(X_{0,l-1},X_{1,l-1})$. Thus, we define Chunk Layer Recurrence similarly to Token Layer Recurrence but with chunks: $K_{i,l}=f(K_{<i,l},\dots)\ \forall i>0$. A model that satisfies Chunk Layer Recurrence will satisfy Token Layer Recurrence when the chunk size is set to 1.
+    
+    \subsection{Staircase Attention}
+    Staircase Attention \citep{ju_staircase_2022} staggers the chunks so that each consecutive chunk attends to the previous chunk after one level of processing. The differences between standard attention and Staircase Attention are depicted in Figure \ref{fig:attention-patterns}. By staggering the chunks, Staircase Attention satisfies Chunk Layer Recurrence. In order to speed up the model, Staircase Attention uses a Universal Transformer \citep{dehghani_universal_2018} so that multiple chunks at different layers can be processed in parallel. \citet{ju_staircase_2022} show that Staircase Attention succeeds on two state tracking tasks where Transformers fail, but they did not consider how the model generalizes out-of-distribution. Here, we look at state tracking tasks and how well the model generalizes to longer sequences. Staircase Attention also shows competitive performance on language modeling tasks. The authors consider chunk sizes 8, 16, and 32 for the algorithmic tasks, and chunk sizes 32, 64, and 128 for the language modeling tasks. Their results generally show improved performance with smaller chunk sizes, at the cost of a slower model.
+    
+    
+    \subsection{Block-Recurrent Transformers}
+    Block-Recurrent Transformers (BRT) \citep{hutchins_block-recurrent_2022} integrate the recurrent connection as cross attention between the current chunk and a set of recurrent tokens. This allows the output of the chunk to use information from previous chunks. The recurrent tokens are updated by using cross-attention to the chunk tokens, and the recurrent tokens are passed along to the next chunk. Crucially, the recurrent tokens attend to the input of the chunk instead of the output. This means that BRT \textit{does not} satisfy Chunk Layer Recurrence. Inspired by gating in LSTMs \citep{hochreiter_long_1997}, BRT experiments with different gate configurations for the recurrent tokens. This design is similar to the Temporal Latent Bottleneck \citep{didolkar_temporal_2022} which was published concurrently. BRT shows improved performance on long sequence language modeling as measured by perplexity. They uses a chunk size of 512, two orders of magnitude larger than the chunks we consider in this paper.
+    
+    \subsection{RegularGPT}
+    RegularGPT \citep{chi_transformer_2023} is not a recurrent model, but we include it in our experiments since it uses chunked processing. Rather than enforcing a sequential processing of chunks, RegularGPT leverages attention masking to enforce a divide-and-conquer strategy. RegularGPT does not support chunk size 1. The divide-and-conquer strategy is implemented using a Universal Transformer with sliding dilated attention masks and dynamic depth. RegularGPT has good length generalization on the Regular Language tasks from \citep{deletang_neural_2022} using a chunk size of $C=2$. However, while RegularGPT improves performance on the Regular Language tasks, it leads to worse performance in Language Modeling as measured by perplexity on length extrapolation when compared to other models designed for long contexts. RegularGPT shows decreased performance going from chunk size 2 to 3. Here, we investigate whether this trend continues for larger chunk sizes 4 and 8. On language modeling, RegularGPT is tested with chunk sizes 32, 64, 128, and 256. The authors find that chunk size 128 works the best but underperforms baselines.
+    
+    \begin{wrapfigure}[15]{r}{0.5\linewidth}
+        \centering
+        \vspace{-6em}
+        \includegraphics[width=\linewidth]{images/recurrent/chunk_1_poster.pdf}
+        \caption{Average generalization performance of token recurrent architectures (chunk size 1) on Regular Language tasks. Bars indicate minimum and maximum values across five random seeds.}
+        \label{fig:fully-recurrent}
+    \end{wrapfigure}
+    
+    \section{Results}
+    \subsection{Datasets}
+    We test the three models on the four Regular Language tasks from \citet{deletang_neural_2022}: Even Pairs, Parity Check, Cycle Navigation, and Modular Arithmetic (Simple). For more details about these tasks, see Appendix \ref{sec:recurrent-dataset-details}. We follow the same procedure as \citet{deletang_neural_2022} and train our models on sequences up to length 40, and during test time we evaluate our model on sequences up to length 500. The score is the average accuracy measured over sequences from length 1 to 500.
+    
+    \subsection{Token Recurrent Transformers (Chunk Size 1)}
+    We first test Recurrent Transformers with a chunk size of 1 to see if a token recurrent model can replicate the performance of a simple RNN. The results are shown in Figure \ref{fig:fully-recurrent}. Both the RNN and Staircase Attention achieve perfect generalization across the four tasks. BRT performs better than the Transformer in Parity Check and Even Pairs but does not provide any benefit in Cycle Navigation or Modular Arithmetic. These results validate that adding the right type of recurrence to Transformers can improve generalization, but a chunk size of 1 forgoes the parallelism benefits of Transformers.
+    
+    \begin{figure}
+        \centering
+        \includegraphics[width=\linewidth]{images/recurrent/results_all_notebook.pdf}
+        \caption{Average generalization performance by chunk size across five random seeds. The shaded regions represent minimum and maximum values. The dashed gray bar represents chance performance. The dashed pink line represents the average Transformer performance, and the dotted pink link represents the max Transformer performance. Transformer results are drawn from \citet{deletang_neural_2022}.}
+        \label{fig:results}
+    \end{figure}
+    
+    \subsection{Performance degrades with larger chunk sizes}
+    In order to see how much we can scale up Recurrent Transformers, we test how the generalization performance changes as we increase parallelism through larger chunk sizes. Figure \ref{fig:results} shows the performance of each architecture and chunk size combination on the four tasks. Across all of the tasks and architectures, generalization drops as chunk sizes increases, except for Even Pairs where all models succeed.
+    
+    \paragraph{Even Pairs} Even Pairs is the only Regular Language task where a standard Transformer is capable of generalizing well, although with high variance as seen by the difference between max and average Transformer results indicated by the pink lines. All three models achieve consistent generalization on Even Pairs regardless of the chunk size. 
+    
+    \paragraph{Parity Check} Transformers struggle on Parity Check with the best performing Transformer barely performing above chance. Both Recurrent models are capable of perfect generalization at chunk size 1, and all three chunked models succeed at chunk size 2, although BRT shows high variance. At chunk size 4, BRT fails to generalize, RegularGPT succeeds across every seed, and Staircase Attention generally performs well. 
+    
+    \paragraph{Cycle Navigation} After Even Pairs, Cycle Navigation is the second easiest Regular Language task, with the best Transformer achieving a score of 0.6. For chunk sizes 1 and 2, Staircase Attention generalizes well, but by chunk size 4 the performance drops drastically. RegularGPT does well at chunk size 2, and is capable of succeeding at chunk size 4, although with high variance. By chunk size 8, RegularGPT no longer generalizes. BRT fails to generalize at any chunk size.
+    
+    \paragraph{Modular Arithmetic} Transformers struggle on Modular Arithmetic, and the best performing model barely does better than chance. BRT fails to generalize and shows similar results as the Transformer. RegularGPT does well at chunk size 2, but it's performance decreases linearly down to chance by chunk size 8. Staircase Attention does well across all of the chunk sizes tested.
+    
+    The main takeaway as evidenced by Figure \ref{fig:results} is that smaller chunk sizes work better. Staircase Attention with chunk size 2 consistently performs well. We do not find much difference between chunk size 1 and 2 in terms of generalization performance for Staircase Attention, and as we will show in the next section, chunk size 2 is roughly twice as fast as chunk size 1.
+    
+    
+    \subsection{Training Speed} \label{sec:recurrent-training-speed}
+    The previous section showed that smaller chunk sizes for Recurrent Transformers work better. However, smaller chunk sizes also lead to a slower step time when the architectures are trained in a non-autoregressive setting with teacher forcing. In this section, we quantify how much slower Recurrent Transformers are at different chunk sizes.
+    
+    Figure \ref{fig:speed} shows the relative step time slowdown of Staircase Attention for different chunk sizes and sequence lengths. We use relative speed in order to profile the model speed since relative speed transfers across hardware and implementation details. In order to calculate the relative speed, we divide the forward and backward step time for Staircase Attention by the step time for a parallel Transformer.  When a chunk size is greater than or equal to the sequence length, the performance should mirror that of a standard Transformer since the sequence will be processed without recurrence, which we see for chunk size 4096. The figure shows that doubling the chunk size roughly makes the model twice as fast. As the sequence length increases so does the slowdown, until a certain point, after which the slowdown decreases. Staircase Attention does not compute the full $O(N^2)$ attention, so at larger lengths the slowdown compared baseline starts to recede. The relative step slowdown for BRT is shown in Appendix \ref{sec:recurrent-brt-performance}.
+    
+    
+    \begin{figure}
+        \centering
+        \includegraphics[width=\linewidth]{images/recurrent/Staircase_notebook.pdf}
+        \caption{Staircase Attention relative step time slowdown compared to a baseline Transformer, represented by the dashed line. Relative slowdown is the ratio of model step time by baseline step time.}
+        \label{fig:speed}
+    \end{figure}
+    
+    Importantly, at test time when performing autoregressive generation, Recurrent Transformers do not incur a speed penalty for their recurrence. This means that these architectures are a fixed training cost, and they yield the same cost when generating text in an autoregressive manner.
+    
+    \subsection{Navigating the generalization-parallelism frontier}
+    The previous two sections illustrate the challenge of scaling Recurrent Transformers. On one hand, large chunk sizes lead to faster training, whereas on the other hand, smaller chunk sizes are more consistent across different tasks. Ideally, we would have a theoretical basis for identifying optimal chunk size in a natural language corpus. Even on the four simple tasks explored here, Staircase Attention has a different optimal chunk size for each task. While chunk size 2 generalizes well on every task, Modular Arithmetic is amenable to chunk size 8 which is roughly 3 times faster than than chunk size 2.
+    
+    \section{Conclusion and Future Work}
+    
+    We investigated the performance of Recurrent Transformers on Regular Language tasks. While Transformers generalize poorly on these tasks, we found that Staircase Attention with a small chunk size generalizes well. 
+    
+    The small chunk size required for consistent generalization poses some roadblocks for scaling up Staircase Attention. Two immediate questions are whether we can define the optimal chunk size that supports generalization for a given task, and whether we can instill recurrence during post-training instead of pre-training.
+    
+    In order to scale up Recurrent Transformers for reasoning, we want to find the largest chunk size for a dataset that retains good generalization. For instance, Python is whitespace sensitive, so one trivial chunking hypothesis is to break chunks on newlines. A similar idea is to break natural language on punctuation, conjunctions, and relative clauses. Future work should investigate the properties that define optimal chunks.
+    
+    One way to alleviate the slowdown from recurrent training is to start with a pre-trained LLM and instill recurrence during post-training. Recurrent processing is more likely to be helpful on datasets where reasoning is important. For example, recurrence would be much more beneficial on datasets with explicit intermediate reasoning \citep{nye_show_2021, wei_chain_2022} than a dataset with a list of independent facts. Some forms of post-training are inherently autoregressive like reinforcement learning from human feedback \citep{christiano_deep_2017}, process supervision \citep{lightman_lets_2024}, and preference optimization \citep{pang_iterative_2024}; in these cases there will be no extra cost of using Recurrent Transformers over standard Transformers. Future work should investigate how recurrent post-training can be performed on a model pre-trained in a parallel manner.
+    
+    An additional direction to consider is how Recurrent Transformers perform within the scaling laws \citep{kaplan_scaling_2020, hoffmann_training_2022}. If recurrence is a useful inductive bias, models may converge faster with better generalization while being trained on shorter sequences. This might make Recurrent Transformers more competitive when evaluated on computational budget as opposed to only looking at the time for a training step.
+    
+    This work showed that some Recurrent Transformers can successfully model Regular Languages. Human language is hypothesized to be Mildly Context-Sensitive \citep{joshi_tree_1985, joshi_convergence_1990}, and we can climb the Chomsky Hierarchy \citep{chomsky_three_1956, chomsky_certain_1959} by integrating Recurrent Transformers with differentiable stacks \citep{joulin_inferring_2015, grefenstette_learning_2015} to model Context-Free Language and differentiable trees \citep{soulos_differentiable_2023} to model Mildly Context-Sensitive Languages. Recent work by \citet{dusell_stack_2024} showed that Transformers with Stack Attention improve modeling of Context-Free transformations, but their models do not perform well out-of-distribution. Integrating Staircase Attention into their model may help Transformers perform better on Context-Free transformations in and out-of distribution.
+    

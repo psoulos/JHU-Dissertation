@@ -1,0 +1,81 @@
+\chapter{Appendix for Recurrent Transformers Trade-off Parallelism for Length Generalization on Regular Languages} \label{chap:appendix-D}
+
+\section{Training details} \label{sec:recurrent-training-details}
+The training details are available below. For each model, we run a hyperparameter search of 20 runs for each combination of architecture, chunk size, and task. The best hyperparameter setting resulting in the highest generalization performance is used to train five additional runs for final results. We noticed that in some cases, models with lower validation loss or higher validation accuracy would have worse generalization performance. When multiple models had the same generalization performance, we selected the setting with the best validation accuracy, and then the lowest validation loss. All models are trained with the AdamW optimizer.
+
+For Staircase Attention, BRT, and RegularGPT, we remove the final EOS token that \citet{deletang_neural_2022} include with the input sequence. For the Transformer model, we keep the final EOS token in order to match their training procedure.
+
+\subsection{Staircase Attention}
+We base our implementation of Staircase Attention on \citet{ju_staircase_2022}. Since the model includes recurrence, we do not include positional embeddings. This corresponds to the NoPe scheme \citep{kazemnejad_impact_2023}.
+
+For sweeps of chunk sizes 1 and 2, we train for 20k steps to reduce the amount of compute used. For chunk sizes 4 and 8, we train for 100k steps. For chunk size 8, we noticed that the training and validation accuracies were still rising at 100k steps, so we increased the training steps to 1 million for the final give runs. For Cycle Navigation and chunk size 2, 20k training steps was insufficient so we increased the number of training steps to 100k. We only run the hyperparameter search for 5 runs on Even Pairs since the task is easy.
+
+We sample the following hyperparameter values during our search:
+
+Batch size: [64, 128, 256]\\
+Embedding size: [64, 256, 512]\\
+Number of heads: [4, 8, 16]\\
+Learning rate: log\_uniform(1e-5, 1e-3)\\
+Dropout: [0, .1, .2]\\
+Weight decay: [0, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1]\\
+AdamW beta1 inverse: log\_uniform(.01, .2)\\
+Number of recurrent calls: [2, 4]\\
+Number of layers in the Universal Transformer: [1, 2]
+
+\subsection{RegularGPT}
+We use the RegularGPT implemention from the authors of \citet{chi_transformer_2023} available at \url{https://github.com/chijames/regular_gpt}.
+
+Unless noted, each search and final run trains for 50k steps. For Cycle Navigation and chunk sizes 4 and 8, we train the final five runs for 100k steps. For Modular Arithmetic, every chunk size gets 100k training steps for the final five runs. On Even Pairs, we only perform a hyperparameter search with 10 runs.
+
+We sample the following hyperparameter values during our search:
+
+Batch size: [64, 128, 256]\\
+Embedding size: [64, 256, 512]\\
+Number of heads: [4, 8, 16]\\
+Learning rate: log\_uniform(1e-5, 1e-3)\\
+Dropout: [0, .1, .2]\\
+Weight decay: [0, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1]\\
+AdamW beta1 inverse: log\_uniform(.01, .2)\\
+Number of recurrent calls: [2, 4]\\
+Number of layers in the Universal Transformer: [1, 2, 3, 4]
+
+\subsection{Block-Recurrent Transformer}
+We use the Block-Recurrent Transformer (BRT) implementation at \url{github.com/lucidrains/block-recurrent-transformer-pytorch}. \citet{hutchins_block-recurrent_2022} experiment with various gate configurations, and we use select the best performing configuration from the paper: fixed gate with the skip configuration which corresponds to \texttt{Rec:fixed:skip} in the original paper.
+
+We use a BRT architecture with three layers, where the first and third layers are standard Transformer layers, and the middle layer is the recurrent layer. We dynamically set the number of recurrent vectors based on the chunk size in order to allow the hyperparameter search to select how much bias there should be between parallel and recurrent computation.
+
+We train runs with chunk size 1 for 50k steps, and runs with chunk sizes 2, 4, and 8 for 100k steps. For the final five runs, we increase the number of training steps for chunk sizes 4 and 8 to 200k. On Cycle Navigation and Modular Arithmetic with chunk size 1, we increase the number of training steps to 100k. We only run the hyperparameter search for 5 runs on Even Pairs since the task is easy.
+
+We sample the following hyperparameter values during our search:
+
+Batch size: [64, 128, 256]\\
+Embedding size: [64, 256, 512]\\
+Number of heads: [4, 8, 16]\\
+Learning rate: log\_uniform(1e-5, 1e-3)\\
+Dropout: [0, .1, .2]\\
+Weight decay: [0, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1]\\
+AdamW beta1 inverse: log\_uniform(.01, .2)\\
+Number of recurrent vectors: [1x chunk size, 2x chunk size, 4x chunk size]
+
+\subsection{Transformer}
+Unless specified, we follow the hyperparameters from \citet{deletang_neural_2022}. We train for 100k steps because Table B.6 in \citet{deletang_neural_2022} showed that more steps does not help, except for Modular Arithmetic where we increase the number of steps to 1 million. We use causal attention masking with no positional embeddings.
+
+\section{Dataset details} \label{sec:recurrent-dataset-details}
+
+\textbf{Parity Check:} Parity Check corresponds to a finite-state machine with two states, \emph{Even} and \emph{Odd}, and it admits two inputs, $0$ and $1$. Given a binary input sequence, the final state of the machine is \emph{Even} if the number of ones in the sequence is even, and otherwise it is \emph{Odd}. 
+
+\textbf{Even Pairs:} Given a binary input sequence, the \emph{Even Pairs} task consists of determining whether the number of $01$ and $10$ subsequences in the input is equal. This task can be equivalently expressed as detecting whether the start and the end of the binary input string are the same symbol.
+
+\textbf{Cycle Navigation:} This task corresponds to a finite-state machine consisting of five states arranged on a cycle graph. It admits three inputs, \emph{Left}, \emph{Right} and \emph{Stay}. Starting from an initial state, the cycle is traversed according to the inputs.
+
+\textbf{Modular Arithmetic:} The inputs to this task are integers between $0$ and $4$ interleaved with the operations $+, -$ and $*$. The final state of the automaton is obtained by evaluating the given expression in modular arithmetic with modulo 5.
+
+\section{BRT Relative Performance} \label{sec:recurrent-brt-performance}
+The training speed analaysis for Staircase Attention in Section \ref{sec:recurrent-training-speed} is replicated here for BRT. The results are shown in Figure \ref{fig:brt-speed}.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\linewidth]{images/recurrent/BRT_notebook.pdf}
+    \caption{BRT relative step time slowdown compared to a baseline Transformer, represented by the dashed line. Relative slowdown is the ratio of model step time by baseline step time.}
+    \label{fig:brt-speed}
+\end{figure}
