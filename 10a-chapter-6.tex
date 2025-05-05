@@ -1,0 +1,30 @@
+\chapter{Conclusion and Future Direction} \label{chap:chap-6}
+\section{Summary of Results}
+
+This dissertation explores compositional generalization through neurosymbolic models, analyzing and proposing architectures that combine neural network flexibility with symbolic computation's interpretability and robustness.
+
+First, the Role Learning Network (ROLE) demonstrates how sequence-to-sequence RNNs implicitly encode symbolic structure by implicitly converging on TPRs. ROLE recovers the latent structures, which allows both interpretation and causal manipulation, demonstrating that the discovered structures are not merely correlational but actually drive the model's behavior.
+
+Next, 
+
+- Neural networks can learn symbolic structures, but they tend to only do so in-distribution. Activation patching.\\
+- We can give symbolic structrures as a first-order representation, and that helps with learning out-of-Distribution.\\
+- The type of vector-symbolic encoding scheme is very important, Sparse Coordinate Trees scale much better than TPRs\\
+- Recurrent Transformers allow us to walk the parallelism-generalization frontier.\\
+- Pooling by multiheaded attention helps both DTM and Superposition Stacks. This may be a generally helpful tool for non-fixed dimensional vector-symbolic techniques.\\
+
+\section{Limitations and Future Work}
+- Scale is a big issue
+
+\subsection{Interpreting implicit recursive structure}
+-ROLE and DISCOVER are basically a flat key-value map type of structure.\\
+-cite murtys work on trees in language models
+
+\subsection{Large Recurrent Language Models?}
+- Recurrent transformers are slow. Post-training has not yielded the results that I hoped.\\
+- Najoungs work on boxes
+
+\subsection{Superposition Shift-Reduce Model}
+- DTM is non-autoregressive\\
+- Combine differentiable tree operations and the differentiable stack into a differentiable shift-reduce parser.\\
+- Cite work on shift-reduce parsers and neural networks.

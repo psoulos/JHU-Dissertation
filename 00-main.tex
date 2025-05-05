@@ -39,7 +39,7 @@
 
 %%%% JH Library requirement (DO NOT CHANGE)
 \def\GlobalMargin{1.0in}                    % margin on all sides
-\def\PrintingOffset{0in}                  % additional left margin for the printed copy
+\def\PrintingOffset{0.0in}                  % additional left margin for the printed copy
 \def\MainTextSpacing{\doublespacing}        % double-spaced main text
 
 
@@ -398,7 +398,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%% TITLE PAGE MACROS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \newcommand{\ThesisTitle}[1]{           % prints thesis title
-    \vspace*{\TitleTopSpacing}
+    \vspace*{-36pt}
+    %\vspace*{\TitleTopSpacing}
     {\TitleFont {#1} \par}
 }
 
@@ -627,11 +628,18 @@
 
 
 %%%% include all the main text chapters
+\include{05a-introduction}
+\part{Analyzing Implicit Structured Representations}
 \include{06-chapter-1}
+\part{Structural Operations on Explicit Tree Representations for Out-of-Distribution Generalization}
 \include{07-chapter-2}
 \include{08-chapter-3}
+\part{Improving Transformers on Formal Languages}
 \include{09-chapter-4}
 \include{10-chapter-5}
+
+\part{Conclusion}
+\include{10a-chapter-6}
 
 %% add more main text technical chapters if you have
 

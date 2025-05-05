@@ -28,54 +28,6 @@
 
 \section{Introduction} \label{sec:rldn-Intro}
 
-\begin{figure}
-    \footnotesize
-    
-    \definecolor{myblue}{RGB}{255,255,255}
-    \definecolor{mybluebox}{RGB}{64,64,64}
-    
-    \begin{tcolorbox}[width=.5\columnwidth, colback={myblue}, coltitle=white, toptitle=3pt, bottomtitle=3pt, colframe={mybluebox},outer arc=2mm,colupper=black, valign=center, halign=left, boxsep = 0pt, title={\textbf{Goal: Interpret neural network encodings}}, halign title=center, segmentation style={solid, line width=1pt}, left=0pt]
-            \def\arraystretch{1.0}% 
-    
-        \includegraphics[width=.5\columnwidth]{images/rldn/rolefig_top.pdf}
-        \end{tcolorbox}
-        
-        \hypersetup{linkcolor=white}
-        
-        \begin{tcolorbox}[width=.5\columnwidth, colback={myblue}, coltitle=white, toptitle=3pt, bottomtitle=3pt, colframe={mybluebox},outer arc=2mm,colupper=black, valign=center, halign=left, boxsep = 0pt, title={\textbf{Method: Approximate the encodings of a neural network with a more \\ interpretable compositional model}  (\S \color{white}\ref{sec:rldn-Role-Learning})}, halign title=center, segmentation style={solid, line width=1pt}, left=3pt]
-            \def\arraystretch{1.0}% 
-        
-        \textbf{Step 1: Assign structural roles to words using a learned role assigner.} 
-        %(\S \ref{sec:rldn-Role-Learning})
-        
-        \includegraphics[width=.5\columnwidth]{images/rldn/rolefig2.png}
-        
-       \textbf{Step 2: Combine word and role vectors using a closed-form equation with learned parameters.} 
-     %   {\scriptsize (\S \ref{sec:rldn-SCANnetReps})}
-        
-        \includegraphics[width=.5\columnwidth]{images/rldn/rolefig_middle.pdf}
-        
-         \end{tcolorbox}
-        
-        \hypersetup{linkcolor=blue}
-        
-        \begin{tcolorbox}[width=.5\columnwidth, colback={myblue}, coltitle=white, toptitle=3pt, bottomtitle=3pt, colframe={mybluebox},outer arc=2mm,colupper=black, valign=center, halign=left, boxsep = 0pt, title={\textbf{Results:}}, halign title=center, segmentation style={solid, line width=1pt}, left=3pt]
-            \def\arraystretch{1.0}% 
-            
-        \textbf{The compositional encodings are functionally equivalent to the RNN encodings.} (\S \ref{sec:rldn-SCANnetReps})
-    
-        \includegraphics[width=.5\columnwidth]{images/rldn/rolefig_bottom1.pdf}
-            
-        \textbf{The RNN encodings can be manipulated in symbolic ways to alter the output.} (\S \ref{sec:rldn-Surgery})
-        
-        \includegraphics[width=.5\columnwidth]{images/rldn/rolefig_bottom2.pdf}
-        
-        \end{tcolorbox}
-        
-        \caption{Summary of our approach.}
-        \label{fig:my_label}
-    \end{figure}
-
 Traditional models of cognition, and language in particular, have relied heavily on symbol structures and symbol manipulation.
 However, in the current era, deep learning research has shown that Neural Networks (NNs) can display remarkable degrees of generalization on tasks traditionally viewed as depending on symbolic structure  \citep{googlenmt, mccoy}, albeit with some important limits to their generalization \citep{lake2018generalization}.
 Given that standard NNs have no obvious mechanisms for representing symbolic structures, parsing inputs into such structures, nor applying compositional symbol-manipulating rules to them, this success raises the question that we address in this paper:\textbf{\emph{ How do NNs achieve such strong performance on compositional tasks?}} 
@@ -105,6 +57,54 @@ The novel contributions of this research are:
   \vspace{-2mm}
   \item Additional evidence showing that sentence embedding models do not capture compositional structure (Sec. \ref{sec:rldn-NLP}).
 \end{itemize}
+
+\begin{figure}
+    \footnotesize
+    
+    \definecolor{myblue}{RGB}{255,255,255}
+    \definecolor{mybluebox}{RGB}{64,64,64}
+    
+    \begin{tcolorbox}[width=.8\columnwidth, colback={myblue}, coltitle=white, toptitle=3pt, bottomtitle=3pt, colframe={mybluebox},outer arc=2mm,colupper=black, valign=center, halign=left, boxsep = 0pt, title={\textbf{Goal: Interpret neural network encodings}}, halign title=center, segmentation style={solid, line width=1pt}, left=0pt]
+            \def\arraystretch{1.0}% 
+    
+        \includegraphics[width=.8\columnwidth]{images/rldn/rolefig_top.pdf}
+        \end{tcolorbox}
+        
+        \hypersetup{linkcolor=white}
+        
+        \begin{tcolorbox}[width=.8\columnwidth, colback={myblue}, coltitle=white, toptitle=3pt, bottomtitle=3pt, colframe={mybluebox},outer arc=2mm,colupper=black, valign=center, halign=left, boxsep = 0pt, title={\textbf{Method: Approximate the encodings of a neural network with a more \\ interpretable compositional model}  (\S \color{white}\ref{sec:rldn-Role-Learning})}, halign title=center, segmentation style={solid, line width=1pt}, left=3pt]
+            \def\arraystretch{1.0}% 
+        
+        \textbf{Step 1: Assign structural roles to words using a learned role assigner.} 
+        %(\S \ref{sec:rldn-Role-Learning})
+        
+        \includegraphics[width=.8\columnwidth]{images/rldn/rolefig2.png}
+        
+       \textbf{Step 2: Combine word and role vectors using a closed-form equation with learned parameters.} 
+     %   {\scriptsize (\S \ref{sec:rldn-SCANnetReps})}
+        
+        \includegraphics[width=.8\columnwidth]{images/rldn/rolefig_middle.pdf}
+        
+         \end{tcolorbox}
+        
+        \hypersetup{linkcolor=blue}
+        
+        \begin{tcolorbox}[width=.8\columnwidth, colback={myblue}, coltitle=white, toptitle=3pt, bottomtitle=3pt, colframe={mybluebox},outer arc=2mm,colupper=black, valign=center, halign=left, boxsep = 0pt, title={\textbf{Results:}}, halign title=center, segmentation style={solid, line width=1pt}, left=3pt]
+            \def\arraystretch{1.0}% 
+            
+        \textbf{The compositional encodings are functionally equivalent to the RNN encodings.} (\S \ref{sec:rldn-SCANnetReps})
+    
+        \includegraphics[width=.8\columnwidth]{images/rldn/rolefig_bottom1.pdf}
+            
+        \textbf{The RNN encodings can be manipulated in symbolic ways to alter the output.} (\S \ref{sec:rldn-Surgery})
+        
+        \includegraphics[width=.8\columnwidth]{images/rldn/rolefig_bottom2.pdf}
+        
+        \end{tcolorbox}
+        
+        \caption{Summary of our approach.}
+        \label{fig:my_label}
+    \end{figure}
 
 \section{Background Related work} \label{sec:rldn-Related}
 
@@ -136,7 +136,7 @@ $\b{e}_\r{TPR}(\t{S}) = \sum_k \b{e}_\rF(\t{f}_k) \otimes \b{e}_\rR(r_k)$. The D
 
 \begin{figure}[t]
     \centering
-    \includegraphics[scale=.25]{images/rldn/task.png}
+    \includegraphics[scale=.4]{images/rldn/task.png}
     \caption{The DISCOVER task and functions. At the top is the target network and question we pose: is the internal embedding a TPR? The middle row is the TPE which follows the provided equation. We train the TPE to minimize the MSE between $\hat{E}$ and $E$. In the bottom row, we evaluate our model by passing the approximations $\hat{E}$ through the decoder and checking the \textit{substitution accuracy} --- the proportion of examples for which the approximated encoding $\hat{E}$ yields the correct output when provided to the decoder .}
     \label{fig:discover}
 \end{figure}
@@ -153,7 +153,7 @@ $\mcal{E}(\t{S}^{(i)})$.
 
 \begin{figure}[t]
     \centering
-    \includegraphics[scale=.3]{images/rldn/tpdn.png}
+    \includegraphics[scale=.4]{images/rldn/tpdn.png}
     \caption{The Tensor Product Encoder architecture. The fillers (yellow circles) and roles (blue circles) are first vectorized with an embedding layer. These two vector embeddings are combined by an outer product to produce the green matrix representing the TPR of the constituent. All of the constituents are summed together to produce the TPR of the sequence, and then a linear transformation is applied to resize the TPR to the target encoder's dimensionality. \RLN\ replaces the role embedding layer and directly produces the blue role vector.}
     \label{fig:tpe-arch}
 \end{figure}
@@ -192,7 +192,7 @@ We consider the SCAN task \citep{lake2018generalization}, which was designed to 
 %sequence-to-sequence mapping 
 task: an input sequence describing an action plan, e.g., \textcolor{violet}{$\t{jump \hs opposite \hs left}$}, is mapped to a sequence of primitive actions, e.g., \textcolor{violet}{$\t{TL \hs TL \hs JUMP}$} (see Sec.~\ref{sec:rldn-Surgery} for a complex example). We use \textcolor{violet}{$\t{TL}$} to abbreviate \textcolor{violet}{$\t{TURN\_LEFT}$}, sometimes written \textcolor{violet}{$\t{LTURN}$}; similarly, we use \textcolor{violet}{$\t{TR}$} for \textcolor{violet}{$\t{TURN\_RIGHT}$}. The SCAN mapping is defined by a complete set of compositional rules \citep[Supplementary Fig. 7]{lake2018generalization}. 
 
-\begin{table*}[ht]
+\begin{table}[t]
 \resizebox{\textwidth}{!}{
 \begin{tabular}{ c c c c c c c c c} 
  \toprule
@@ -203,7 +203,7 @@ task: an input sequence describing an action plan, e.g., \textcolor{violet}{$\t{
 \end{tabular}
 }
 \caption{\label{tab:scan-accuracy}Mean substitution accuracy for learned (bold) and hand-defined role schemes on SCAN across three random initializations. Standard deviation was below 1\% for all schemes except for snapped. Substitution accuracy is measured by feeding \RLN's approximation to the target decoder. (Sec.~\ref{sec:rldn-SCANnetReps})}
-\end{table*}
+\end{table}
 
 \subsection{The compositional structure of SCAN encoder representations} \label{sec:rldn-SCANnetReps}
 
@@ -286,7 +286,7 @@ The previous sections explored fully-compositional tasks where there is a strong
 
 We test four sentence encoding models for compositionality: InferSent \citep{conneau2017supervised}, Skip-thought \citep{kiros2015skip}, Stanford Sentiment Model (SST) \citep{socher2013recursive}, and SPINN \citep{bowman2016fast}. For each of these models, we extract the encodings for the SNLI premise sentences \citep{bowman2015large}. We use the extracted embeddings to train \RLN\ with 50 roles available (additional training information provided in Appendix \ref{sec:rldn-role-sentences}).
 
-\begin{table*}[h!]
+\begin{table*}[t]
     \centering
    \resizebox{\textwidth}{!}{
 		\begin{tabular} {lcccccccc}
@@ -304,9 +304,9 @@ We test four sentence encoding models for compositionality: InferSent \citep{con
 
 As a baseline, we also train TPEs that use pre-defined role schemes (hyperparameters described in Appendix \ref{sec:rldn-tpe-sentences}). For all of the sentence embedding models except Skip-thought, \RLN\ with continuous attention provides the lowest mean squared error at approximating the encoding (Table~\ref{tab:sent-emb-mse}). The BOW (bag-of-words) role scheme represents a TPE that uses a degenerate `compositional' structure which assigns the same role to every filler; for each of the sentence embedding models tested except for SST, performance is  within the same order of magnitude as structure-free BOW. \citet{parikh2016decomposable} found that a bag-of-words model scores extremely well on Natural Language Inference despite having no knowledge of word order, showing that structure is not necessary to perform well on the sorts of tasks commonly used to train sentence encoders. Although not definitive, the \RLN\ results provide no evidence that these models' sentence embeddings possess compositional structure.
 
-In future work, it would be interesting to perform a similar analysis on Transformer architectures \citep{vaswani2017attention}. Such models have displayed impressive syntactic generalization \cite{hu2020systematic} and few-shot learning of compositional tasks \cite{brown2020language}, both of which suggest that they learn substantial degrees of compositional structure; thus, ROLE may be more likely to discover meaningful structure in Transformers than in the sentence-embedding models in Table \ref{tab:sent-emb-mse}. Further work has found impressive degrees of syntactic structure in Transformer encodings \cite{hewitt2019structural}, suggesting that there may well be compositional structure for ROLE to pick up on. The main difficulty in applying ROLE to Transformers---and the reason we did not include Transformers in our study---is that the sentence representation used by a Transformer is typically viewed as a variable-sized collection of vectors, whereas ROLE requires single-vector representations; this discrepancy must be overcome if ROLE is to be applied to Transformers. 
+In future work, it would be interesting to perform a similar analysis on Transformer architectures \citep{vaswani2017attention}. Such models have displayed impressive syntactic generalization \citep{hu2020systematic} and few-shot learning of compositional tasks \citep{brown2020language}, both of which suggest that they learn substantial degrees of compositional structure; thus, ROLE may be more likely to discover meaningful structure in Transformers than in the sentence-embedding models in Table \ref{tab:sent-emb-mse}. Further work has found impressive degrees of syntactic structure in Transformer encodings \citep{hewitt2019structural}, suggesting that there may well be compositional structure for ROLE to pick up on. The main difficulty in applying ROLE to Transformers---and the reason we did not include Transformers in our study---is that the sentence representation used by a Transformer is typically viewed as a variable-sized collection of vectors, whereas ROLE requires single-vector representations; this discrepancy must be overcome if ROLE is to be applied to Transformers. 
 
-One past work \cite{jawahar-etal-2019-bert} has applied ROLE's precursor (the TPDN of \citet{mccoy}) to Transformer representations by choosing the [CLS] token of BERT \cite{devlin2019bert} as the single-vector sentence encoding to decompose. \citeauthor{jawahar-etal-2019-bert} found that these encodings were approximated better by human-specified tree-position roles than by other human-specified candidates (e.g., left-to-right and right-to-left roles). By removing the constraint of requiring human-designed role schemes, ROLE may be able to discover other role schemes that approximate BERT's encodings even more closely.
+One past work \citep{jawahar-etal-2019-bert} has applied ROLE's precursor (the TPDN of \citet{mccoy}) to Transformer representations by choosing the [CLS] token of BERT \citep{devlin2019bert} as the single-vector sentence encoding to decompose. \citeauthor{jawahar-etal-2019-bert} found that these encodings were approximated better by human-specified tree-position roles than by other human-specified candidates (e.g., left-to-right and right-to-left roles). By removing the constraint of requiring human-designed role schemes, ROLE may be able to discover other role schemes that approximate BERT's encodings even more closely.
 % The main difficulty in applying ROLE to Transformers---and the reason we did not include Transformers in our study---is that the sentence representation used by a Transformer is typically viewed as a variable-sized collection of vectors, whereas ROLE requires single-vector representations; this discrepancy must be overcome if ROLE is to be applied to Transformers.
 
 \section{Conclusion} \label{sec:rldn-Conclusion}

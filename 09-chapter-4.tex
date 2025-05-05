@@ -13,16 +13,14 @@
     
     \section{Introduction}
     
-    \begin{wrapfigure}[16]{r}{0.5\linewidth}
+    \begin{figure}[t]
         \centering
-        \vspace{-2.5em}
-        \includegraphics[width=\linewidth]{images/recurrent/generalization_performance_talk.pdf}
+        \includegraphics[width=.5\linewidth]{images/recurrent/generalization_performance_talk.pdf}
         \caption{The generalization performance of Transformers with various types of recurrence. Lengths to the left of the dashed line are in-distribution, and lengths to the right are out-of-distribution.}
         \label{fig:results-summary}
-        \vspace{-2em}
-    \end{wrapfigure}
+    \end{figure}
     
-    Despite the remarkable success of Transformers \citep{vaswani_attention_2017} in Natural Language Processing (NLP), the architecture continues to struggle with state tracking and algorithmic reasoning \citep{hahn_theoretical_2020, bhattamishra_ability_2020, deletang_neural_2022}. The Chomsky Hierarchy \citep{chomsky_three_1956, chomsky_certain_1959} provides a framework for classifying tasks based on difficulty, and \citet{deletang_neural_2022} demonstrated that Transformers show profound weaknesses across the hierarchy.
+    Despite the remarkable success of Transformers \citep{vaswani2017attention} in Natural Language Processing (NLP), the architecture continues to struggle with state tracking and algorithmic reasoning \citep{hahn_theoretical_2020, bhattamishra_ability_2020, deletang_neural_2022}. The Chomsky Hierarchy \citep{chomsky_three_1956, chomsky_certain_1959} provides a framework for classifying tasks based on difficulty, and \citet{deletang_neural_2022} demonstrated that Transformers show profound weaknesses across the hierarchy.
     
     Regular Languages, the simplest class in the Chomsky Hierarchy, are an important benchmark for evaluating the reasoning capabilities of neural network architectures. Regular Languages can be represented using a Finite State Machine with no access to an external memory \citep{hopcroft_introduction_2006}. If an architecture fails to learn Regular Languages in a robust and generalizable way, it is unlikely that it will succeed on more challenging problems further up the hierarchy. On three out of four Regular Language tasks from \citet{deletang_neural_2022}, Transformers fail to generalize to longer samples than those encountered in the training set (see the \textcolor{pink}{pink} line in Figure \ref{fig:results-summary}). Such experimental studies are supported by theoretical results that highlight the Transformer's inability to model regular languages over arbitrary input lengths \citep{merrill_parallelism_2023, strobl_what_2024}.
     
@@ -70,14 +68,12 @@
     Since Transformers lack recurrence, positional embeddings are used to signify the order of tokens. Different types of positional embeddings can improve length generalization \citep{csordas_devil_2021, ruoss_randomized_2023, shaw_self-attention_2018, su_roformer_2024, zhou_transformers_2024, kazemnejad_impact_2023, press_train_2021}, although \citet{deletang_neural_2022} and \citet{ruoss_randomized_2023} showed that none of the positional embeddings that they tested allowed Transformers to generalize well on Regular Languages.
     
     \section{Architectures}
-    \begin{wrapfigure}[27]{r}{0.3\linewidth}
+    \begin{figure}[ht]
         \centering
-        \vspace{-3em}
-        \includegraphics[width=\linewidth]{images/recurrent/attention patterns.pdf}
+        \includegraphics[width=.2\linewidth]{images/recurrent/attention patterns.pdf}
         \caption{Attention patterns for standard attention and Staircase Attention.}
         \label{fig:attention-patterns}
-        \vspace{-0em}
-    \end{wrapfigure}
+    \end{figure}
     
     We briefly describe three architectures that we test. For additional details, please see the original papers. For each architectures, task, and chunk size, we run a hyperparameter search to find the best setting for that combination. We then train five randomly initialized models with the best setting and report these results. Training details for each architecture can be found in Appendix \ref{sec:recurrent-training-details}.
     
@@ -97,13 +93,12 @@
     \subsection{RegularGPT}
     RegularGPT \citep{chi_transformer_2023} is not a recurrent model, but we include it in our experiments since it uses chunked processing. Rather than enforcing a sequential processing of chunks, RegularGPT leverages attention masking to enforce a divide-and-conquer strategy. RegularGPT does not support chunk size 1. The divide-and-conquer strategy is implemented using a Universal Transformer with sliding dilated attention masks and dynamic depth. RegularGPT has good length generalization on the Regular Language tasks from \citep{deletang_neural_2022} using a chunk size of $C=2$. However, while RegularGPT improves performance on the Regular Language tasks, it leads to worse performance in Language Modeling as measured by perplexity on length extrapolation when compared to other models designed for long contexts. RegularGPT shows decreased performance going from chunk size 2 to 3. Here, we investigate whether this trend continues for larger chunk sizes 4 and 8. On language modeling, RegularGPT is tested with chunk sizes 32, 64, 128, and 256. The authors find that chunk size 128 works the best but underperforms baselines.
     
-    \begin{wrapfigure}[15]{r}{0.5\linewidth}
+    \begin{figure}[t]
         \centering
-        \vspace{-6em}
-        \includegraphics[width=\linewidth]{images/recurrent/chunk_1_poster.pdf}
+        \includegraphics[width=.5\linewidth]{images/recurrent/chunk_1_poster.pdf}
         \caption{Average generalization performance of token recurrent architectures (chunk size 1) on Regular Language tasks. Bars indicate minimum and maximum values across five random seeds.}
         \label{fig:fully-recurrent}
-    \end{wrapfigure}
+    \end{figure}
     
     \section{Results}
     \subsection{Datasets}

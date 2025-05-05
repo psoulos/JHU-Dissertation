@@ -22,15 +22,12 @@
 
 \section{Introduction}
 
-\begin{wrapfigure}[13]{r}{.425\linewidth}
+\begin{figure}[t]
     \centering
-    \vspace{-5.2em}
-    \includegraphics[width=\linewidth]{images/sdtm/tight_radar/radar_integrated_legend.png}
-    %\vspace{-2.5em}
+    \includegraphics[width=.5\linewidth]{images/sdtm/tight_radar/radar_integrated_legend.png}
     \caption{Generalization ability of our approach (\sdtm) compared with baselines across various out-of-distribution shifts, averaged over different datasets. See \S \ref{sec:sdtm-results}.}
     \label{fig:enter-label}
-    \vspace{-1.5em}
-\end{wrapfigure}
+\end{figure}
 
 
 Deep learning models achieve remarkable performance across a broad range of natural language tasks \citep{vaswani2017attention}, despite having difficulty generalizing outside of their training data, struggling with new words \citep{Lake_2018_GeneralizationSystematicityCompositional}, known words in new contexts \citep{keysers2020measuring}, and novel syntactic structures, like longer sequences with greater recursive depth \citep{kim-linzen-2020-cogs, li_slog_2023}. Increasingly this problem is addressed through data augmentation, which tries to make it less likely a model will encounter something unlike what it sees during training --- reducing the degree by which it has to generalize \citep{andreas_good-enough_2020, devlin_bert_2019,  guo_sequence-level_2020}. However, even models trained on vast quantities of data struggle when evaluated on examples unlike those seen during training \citep{kim2022uncontrolled}.
@@ -141,12 +138,13 @@ O(\vec{w}, \vec{T}, s) = w_L \leftcommand(T_{L}) + w_R \rightcommand(T_{R}) + w_
 Our work extends the Differentiable Tree Machine (\dtm) introduced in \citet{Soulos_2023_DifferentiableTreeOperations} with the Sparse Differentiable Tree Machine (\sdtm). While similar to the original at a computational level, \sdtm represents a different implementation of these concepts that make it dramatically more parameter and memory efficient. We also introduce techniques to apply \sdtm to tasks with sequence input and output (seq2seq). 
 
 \subsection{Overview} \label{sec:sdtm-dtm_sparse}
-\begin{wrapfigure}{r}{0.45\linewidth}
+
+\begin{figure}[t]
     \centering
-    \includegraphics[width=\linewidth]{images/sdtm/dtm-shrink.pdf}
+    \includegraphics[width=0.5\linewidth]{images/sdtm/dtm-shrink.pdf}
     \caption{A schematic of how the three core components of the \dtm (agent, interpreter, and memory) relate to each other. Adapted from \citet{Soulos_2023_DifferentiableTreeOperations}.}
     \label{fig:dtm}
-\end{wrapfigure}
+\end{figure}
 
 \sdtm uses our \fullrepname schema across its components. Like the original \dtm, our model is comprised of an agent, interpreter, and memory (illustrated in Figure \ref{fig:dtm}). The Interpreter performs Equation \ref{eq:sdtm-output} by applying the bit-shifting tree operations from Section \ref{sec:sdtm-diff-tree-ops} and weighting the result. The output from the interpreter is written to the next available memory slot, and the last memory slot is taken as the output.
 
