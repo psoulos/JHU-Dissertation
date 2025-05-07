@@ -194,11 +194,15 @@
             style=authoryear,  % ← author–year
             natbib=true,       % still allows \citet/\citep
             maxcitenames=2,    % “Einstein et al.”
+            mincitenames=1,    % show at least 1 name before "et al."
+            uniquelist=false,  % don't expand ambiguous citations
             maxbibnames=99,
             date=year,
             isbn=false,
             url=false,
-            doi=true
+            doi=true,
+            giveninits=false,  % Don't use initials
+            uniquename=false,  % Don't differentiate between same last names
            ]{biblatex}
 
 
@@ -242,6 +246,7 @@
 
 \usepackage[most]{tcolorbox}
 \usepackage{soul}
+
 \input{math_commands.tex}
 
 %% add more packages and/or change options of the packages as needed
@@ -594,7 +599,7 @@
 
 
 %%%% OPTIONAL but COMMON: preface chapters
-\include{03-dedication}
+%\include{03-dedication}
 \include{04-acknowledgement}        
 \include{05-epigraph}
 %% you can have other chapters and the order does not matter
