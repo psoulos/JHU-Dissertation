@@ -1,21 +1,21 @@
 \chapter{Improving Superposition Stack Transformers on Nondeterministic Context-Free Languages} \label{chap:chap-5}
 
 
-This chapter investigates how to extend Superposition Stack Transformers \citep{dusell2024stack} so that they learn nondeterministic context‑free languages (CFLs) more reliably.  Whereas Chapter \ref{chap:chap-4} focused on regular languages, here I move one level higher in the Chomsky hierarchy and ask whether the additional expressive power of a nondeterministic pushdown automaton can be captured in a differentiable way.  Building on the Superposition Stack Transformer architecture of \citet{dusell2024stack}, I show that a simple pooling mechanism, the same pooling by multi-headed attention used in the sDTM architecture (\S\ref{sec:sdtm-mha}), allows a single superposition stack to keep track of multiple simultaneously active stack configurations and thereby improves modeling performance of nondeterministic CFLs.
+This chapter investigates how to extend Superposition Stack Transformers \citep{dusell2024stack} so that they can learn nondeterministic Context Free Languages (CFLs) more reliably.  Whereas Chapter \ref{chap:chap-4} focused on Regular Languages, here I ascend one level in the Chomsky hierarchy and ask whether the additional expressive power of a nondeterministic pushdown automaton can be captured in a differentiable way.  Building on the Superposition Stack Transformer architecture of \citet{dusell2024stack}, I show that a pooling mechanism, the same pooling by multi-headed attention used in the sDTM architecture (\S\ref{sec:sdtm-mha}), allows a single superposition stack to keep track of multiple simultaneously active stack configurations and thereby improves modeling performance of nondeterministic CFLs.
 
 \section{Background}
-Augmenting neural models with an explicit stack has proven effective for learning CFLs since the pioneering work of \citet{das1992learning}.  Modern differentiable stacks replace hard push/pop operations by continuous relaxations that can be trained end‑to‑end \citep{joulin2015inferring, grefenstette2015learning}.  Recently, \citet{dusell2024stack} embedded the superposition stack of \citet{joulin2015inferring} directly inside the Transformer attention operation, which approximates a deterministic pushdown automaton by interpolating over \textit{push}, \textit{pop}, and \textit{no‑op} operations.
+Augmenting neural models with an explicit stack has proven effective for learning CFLs since the pioneering work of \citet{das1992learning}.  Modern differentiable stacks replace hard push/pop operations by continuous relaxations that can be trained end‑to‑end \citep{joulin2015inferring, grefenstette2015learning}.  Recently, \citet{dusell2024stack} embedded the superposition stack of \citet{joulin2015inferring} directly inside the Transformer attention mechanism, which approximates a deterministic pushdown automaton by interpolating over \textit{push}, \textit{pop}, and \textit{no‑op} operations.
 
-A separate line of work in recent years is to modify the attention mechanism in a Transformer in order to simulate a stack \citep{murty_pushdown_2023, li_transformer_2024}. These models do not use an external memory for their stack, but instead use the hidden states within the modified Transformer to represent the stack.
+A separate line of related work is to modify the attention mechanism in a Transformer in order to simulate a stack \citep{murty_pushdown_2023, sartran2022transformer, li_transformer_2024}. These models do not use an external memory for their stack, but instead use the hidden states within the modified Transformer to represent the stack.
 
 \section{Superposition Stack Attention}
-A superposition stack maintains a value matrix at time $t$ $V_t \in \mathbb{R}^{r\times d}$ whose $i$‑th row stores the filler at the $i$‑th depth of the stack. This encoding scheme is similar to Sparse Coordinate Trees, but the positional indices can be removed because they are implict in the index of the value within the value matrix.
+A superposition stack maintains a filler matrix at time $t$ $V_t \in \mathbb{R}^{r\times d}$ whose $i$‑th row stores the filler at the $i$‑th depth of the stack. This encoding scheme is similar to Sparse Coordinate Trees, but the positional indices can be removed because they are implict in the index of the value within the value matrix. For example, the vector at index three $V_t[3]$ has a role index of 3, so it is no longer necessary to use a separate role vector as in Sparse Coordinate Trees.
 
 Like standard dot-product attention, superposition stack attention takes in an input $x_t$ and produces a value vector $v_t=W_Vx_t$. Instead of producing a distribution over previous tokens through query-key dot products, superposition stack attention produces a soft distribution over three stack operations: \textit{push}, \textit{pop}, and \textit{no-op}.
 \begin{equation}
   a_t = \bigl[a^{\mathrm{push}}_t,\;a^{\mathrm{no-op}}_t,\;a^{\mathrm{pop}}_t\bigr]^{\top} = \operatorname{softmax}(W_{a}x_{t}),
 \end{equation}
-where $x_t$ is the representation passed into the attention layer and $W_{a}$ is a learned projection.
+where $W_{a}$ is a learned projection.
 
 Given a value vector $v_t$ the superposition stack is updated according to a soft summation over the three operations \citep{joulin2015inferring}:
 \begin{align}
@@ -26,7 +26,7 @@ Given a value vector $v_t$ the superposition stack is updated according to a sof
 where
 \begin{align}
   &\texttt{above}_{t}(i)=\begin{cases}v_t & i=1\\V_{t-1}[i-1] & i>1\end{cases}\\
-  &\texttt{at}_{t}(i)=\begin{cases}V_{t-1}[i] & i<1\\0 & i = t \end{cases}\\
+  &\texttt{at}_{t}(i)=\begin{cases}V_{t-1}[i] & i<t\\0 & i \geq t \end{cases}\\
   &\texttt{below}_{t}(i)=\begin{cases}V_{t-1}[i+1] & i<t-1\\ 0 & i\geq t-1\end{cases}
 \end{align}
 The output of superposition stack attention is the top cell:
@@ -34,17 +34,17 @@ The output of superposition stack attention is the top cell:
   y_t = V_t[1]. \label{eq:stack-read-top}
 \end{equation}
 
-\subsection{Pooling with multi‑headed attention}
+\subsection{Pooling with multi‑headed attention} \label{sec:stack-pooling}
 As defined in Eq.~\ref{eq:stack-read-top}, the standard superposition formulation reads $y_t$ from the single top cell $V_t[1]$. While this is adequate to model deterministic CFLs, nondeterministic CFLs require tracking multiple hypotheses.  Inspired by the ``tree pooling'' trick used for sDTM in Section~\ref{sec:sdtm-mha}, I replace the output function of the superposition stack with pooling by multi-headed attention (PMA) \citep{lee_set_2019}.
 
-PMA calculates a fixed-dimensional output vector as a weighted sum over the elements in the stack, where the weight is derived based on query-key attention. To maintain the ordering of the vectors in the stack, I add learned positional embeddings to the vectors in the stack prior to performing the key and value transformations. Formally, let the learned positional embeddings be $P \in \mathbb{R}^{l\times d}$, where $l$ is the max depth of the stack. The inputs to the key and value transformations are $V[i] + P[i]  \forall i$. The query vector is a separate learnable vector $\vec{q} \in \mathbb{R}^{\text{num\_heads}\times\text{key\_dim}}$. The rest of the attention calculation proceeds as normal.
+PMA calculates a fixed-dimensional output vector as a weighted sum over the elements in the stack, where the weight is derived based on query-key attention. To maintain the ordering of the vectors in the stack, I add learned positional embeddings to the vectors in the stack prior to performing the key and value transformations. This is necessary because query-key attention in invariant to the order of the keys and values, but the order of the elements in the stack is important. Formally, let the learned positional embeddings be $P \in \mathbb{R}^{l\times d}$, where $l$ is the max depth of the stack. The inputs to the key and value transformations are $V[i] + P[i]  \forall i$. The query vector is a separate learnable vector $\vec{q} \in \mathbb{R}^{\text{num\_heads}\times\text{key\_dim}}$. The rest of the attention calculation proceeds as normal.
 
 \subsection{Why pooling helps model nondeterministic CFLs}
 A nondeterministic reversal language such as $ww^R$ is ambiguous at the midpoint. The single‑cell output of the original superposition stack forces the model to pick a specific hypothesis, thus leading to high perplexity. The pooled output function lets attention distribute mass across all locations in the stack, allowing the neural network to model multiple hypotheses simultaneously.
 
 
 \section{Datasets}
-We evaluate on the five synthetic CFL benchmarks introduced by \citet{dusell2024stack}:
+We evaluate the five synthetic CFL benchmarks from \citet{dusell2024stack}:
 \begin{description}
   \item[\textsc{Marked Reversal} (deterministic)] $\\{w\#w^R \mid w \in \{0,1\}^*\\}$ adds an unambiguous marker separating the halves.
   \item[\textsc{Unmarked Reversal} (nondeterministic)] $\\{ww^R \mid w \in \{0,1\}^*\\}$ removes the marker, creating nondeterminism at the midpoint.
@@ -59,9 +59,9 @@ Following the protocol of \citet{dusell2024stack}, each model is trained on 10,0
 \section{Results} \label{sec:stack-results}
 I compared three causal Transformer models, each with five layers and a hidden dimension $d=32$:
 \begin{enumerate}
-    \item \textbf{Transformer}: standard scaled dot‑product attention
-    \item \textbf{Transformer+Top Superposition Stack}: superposition stack attention with top‑only output and the stack at layer three
-    \item \textbf{Transformer+Pooled Superposition Stack}: superposition stack attention with pooled output and the stack at layer three
+    \item \textbf{Transformer}: standard scaled dot‑product attention.
+    \item \textbf{Transformer+Top Superposition Stack}: superposition stack attention with top‑only output and the stack at layer three. This is identical to the model introduced in \citet{dusell2024stack}.
+    \item \textbf{Transformer+Pooled Superposition Stack}: superposition stack attention with pooled output and the stack at layer three.
 \end{enumerate}
 
 Figure \ref{fig:stack-results} shows the cross‑entropy difference (lower is better) between the learned distribution and the true data generating distribution. For each model and dataset, five models were trained with different random seeds. The results show the best model as selected by cross entropy difference on the validation set. 
@@ -74,12 +74,10 @@ Figure \ref{fig:stack-results} shows the cross‑entropy difference (lower is be
     \label{fig:stack-results}
 \end{figure}
 
-
-% TODO: add the figures
 All three models perform well on the marked reversal deterministic task, but the two stack models perform better on the deterministic Dyck. Turning to the nondeterministic CFLs, on unmarked reversal, the pooled superposition stack performs much better than the top superposition stack and standard transformer. The performance improvement is less pronounced on padded reversal, and all three models perform similarly on hardest CFL.
 
 
-Pooling did not cause any regressions in-distribution, and helped on two of the nondeterministic CFLs. When we turn to the results for out-of-distribution, we see that pooling causes a steeper slope on the cross entropy difference from ground truth. This result is probably because of the unseen positional embeddings encountered during training. It would be worth looking into Randomized Positional Embeddings to try and fix this discrepancy \citep{ruoss_randomized_2023}.
+Pooling did not cause any regressions in-distribution, and helped on two of the nondeterministic CFLs. Looking at the out-of-distribution results, we see that pooling causes a steeper slope on the cross entropy difference from ground truth. This result may be due to the unseen positional embeddings applied to the stack vectors during pooling (\S \ref{sec:stack-pooling}). It would be worth considering positional embeddings for improved length generalization to fix this discrepancy, for example Randomized Positional Embeddings \citep{ruoss_randomized_2023}.
 
 \section{Conclusion and Future Work}
-I introduced an pooled encoding for superposition stacks that retains their efficiency while recovering some of the expressivity needed for nondeterministic CFLs.  Future directions include (i) exploring different positional embeddings for the pooling operation in order to encourage better out-of-distribution generalization, such as Randomized Positional Encodings \citep{ruoss_randomized_2023}, and (ii) integrating the superposition stack transformer with the recurrent transformer from Chapter \ref{chap:chap-5}.
+I introduced a pooled encoding for superposition stacks that retains their efficiency while recovering some of the expressivity needed for nondeterministic CFLs.  Future directions include (i) exploring different positional embeddings for the pooling operation in order to encourage better out-of-distribution generalization, and (ii) integrating the superposition stack transformer with the recurrent transformer from Chapter \ref{chap:chap-5}.
