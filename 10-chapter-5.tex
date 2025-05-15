@@ -4,7 +4,7 @@
 This chapter investigates how to extend Superposition Stack Transformers \citep{dusell2024stack} so that they can learn nondeterministic Context Free Languages (CFLs) more reliably.  Whereas Chapter \ref{chap:chap-4} focused on Regular Languages, here I ascend one level in the Chomsky hierarchy and ask whether the additional expressive power of a nondeterministic pushdown automaton can be captured in a differentiable way.  Building on the Superposition Stack Transformer architecture of \citet{dusell2024stack}, I show that a pooling mechanism, the same pooling by multi-headed attention used in the sDTM architecture (\S\ref{sec:sdtm-mha}), allows a single superposition stack to keep track of multiple simultaneously active stack configurations and thereby improves modeling performance of nondeterministic CFLs.
 
 \section{Background}
-Augmenting neural models with an explicit stack has proven effective for learning CFLs since the pioneering work of \citet{das1992learning}.  Modern differentiable stacks replace hard push/pop operations by continuous relaxations that can be trained end‑to‑end \citep{joulin2015inferring, grefenstette2015learning}.  Recently, \citet{dusell2024stack} embedded the superposition stack of \citet{joulin2015inferring} directly inside the Transformer attention mechanism, which approximates a deterministic pushdown automaton by interpolating over \textit{push}, \textit{pop}, and \textit{no‑op} operations.
+Augmenting neural models with an explicit stack has proven effective for learning CFLs since the pioneering work of \citet{das1992learning}.  Modern differentiable stacks replace hard push/pop operations by continuous relaxations that can be trained end‑to‑end \citep{joulin_inferring_2015, grefenstette2015learning}.  Recently, \citet{dusell2024stack} embedded the superposition stack of \citet{joulin_inferring_2015} directly inside the Transformer attention mechanism, which approximates a deterministic pushdown automaton by interpolating over \textit{push}, \textit{pop}, and \textit{no‑op} operations.
 
 A separate line of related work is to modify the attention mechanism in a Transformer in order to simulate a stack \citep{murty_pushdown_2023, sartran2022transformer, li_transformer_2024}. These models do not use an external memory for their stack, but instead use the hidden states within the modified Transformer to represent the stack.
 
@@ -17,7 +17,7 @@ Like standard dot-product attention, superposition stack attention takes in an i
 \end{equation}
 where $W_{a}$ is a learned projection.
 
-Given a value vector $v_t$ the superposition stack is updated according to a soft summation over the three operations \citep{joulin2015inferring}:
+Given a value vector $v_t$ the superposition stack is updated according to a soft summation over the three operations \citep{joulin_inferring_2015}:
 \begin{align}
  V_t[i] &= a^{\mathrm{push}}_t\,\texttt{above}_{t}(i)
           + a^{\mathrm{no-op}}_t\,\texttt{at}_{t}(i)
@@ -77,7 +77,7 @@ Figure \ref{fig:stack-results} shows the cross‑entropy difference (lower is be
 All three models perform well on the marked reversal deterministic task, but the two stack models perform better on the deterministic Dyck. Turning to the nondeterministic CFLs, on unmarked reversal, the pooled superposition stack performs much better than the top superposition stack and standard transformer. The performance improvement is less pronounced on padded reversal, and all three models perform similarly on hardest CFL.
 
 
-Pooling did not cause any regressions in-distribution, and helped on two of the nondeterministic CFLs. Looking at the out-of-distribution results, we see that pooling causes a steeper slope on the cross entropy difference from ground truth. This result may be due to the unseen positional embeddings applied to the stack vectors during pooling (\S \ref{sec:stack-pooling}). It would be worth considering positional embeddings for improved length generalization to fix this discrepancy, for example Randomized Positional Embeddings \citep{ruoss_randomized_2023}.
+Pooling did not cause any regressions in-distribution, and helped on two of the nondeterministic CFLs. Looking at the out-of-distribution results, we see that pooling causes a steeper slope on the cross entropy difference from ground truth. This result may be due to the unseen positional embeddings applied to the stack vectors during pooling (\S \ref{sec:stack-pooling}). It would be worth considering positional embeddings for improved length generalization to fix this discrepancy, for example Randomized Positional Embeddings \citep{ruoss-etal-2023-randomized}.
 
 \section{Conclusion and Future Work}
 I introduced a pooled encoding for superposition stacks that retains their efficiency while recovering some of the expressivity needed for nondeterministic CFLs.  Future directions include (i) exploring different positional embeddings for the pooling operation in order to encourage better out-of-distribution generalization, and (ii) integrating the superposition stack transformer with the recurrent transformer from Chapter \ref{chap:chap-5}.
